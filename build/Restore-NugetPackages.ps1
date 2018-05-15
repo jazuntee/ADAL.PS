@@ -2,29 +2,51 @@ param
 (
     # 
     [parameter(Mandatory=$false)]
-    [string] $PackagesConfigPath = "C:\Users\jason\Source\Repos\ADAL.PS\packages.config",
+    [string] $PackagesConfigPath = "..\packages.config",
     # 
     [parameter(Mandatory=$false)]
-    [string] $NuGetConfigPath = "C:\Users\jason\Source\Repos\ADAL.PS\NuGet.config",
+    [string] $NuGetConfigPath,
+    # 
+    [parameter(Mandatory=$false)]
+    [string] $OutputDirectory,
     # 
     [parameter(Mandatory=$false)]
     [string] $NuGetPath,
     # 
     [parameter(Mandatory=$false)]
-    [uri] $NuGetUri = 'https://nuget.org/nuget.exe'
+    [uri] $NuGetUri = 'https://dist.nuget.org/win-x86-commandline/latest/nuget.exe'
 )
 
-[System.IO.FileInfo] $itemNuGetPath = (Get-Location).ProviderPath
-if ($NuGetPath) { $itemNuGetPath = $NuGetPath }
-if (!$itemNuGetPath.Extension) { $itemNuGetPath = Join-Path $itemNuGetPath.FullName "nuget.exe" }
-Set-Alias nuget -Value $itemNuGetPath.FullName
+## Initialize
+Remove-Module CommonFunctions -ErrorAction SilentlyContinue
+Import-Module .\CommonFunctions.psm1
 
-if (!$itemNuGetPath.Exists) {
+[System.IO.FileInfo] $PackagesConfigFileInfo = Get-PathInfo $PackagesConfigPath -DefaultFilename "packages.config" -ErrorAction Stop
+[System.IO.FileInfo] $NuGetConfigFileInfo = Get-PathInfo $NuGetConfigPath -DefaultFilename "NuGet.config" -SkipEmptyPaths
+[System.IO.DirectoryInfo] $OutputDirectoryInfo = Get-PathInfo $OutputDirectory -InputPathType Directory -SkipEmptyPaths -ErrorAction SilentlyContinue
+[System.IO.FileInfo] $NuGetFileInfo = Get-PathInfo $NuGetPath -DefaultFilename "nuget.exe" -ErrorAction SilentlyContinue
+#Set-Alias nuget -Value $itemNuGetPath.FullName
+
+## Download NuGet
+if (!$NuGetFileInfo.Exists) {
     Invoke-WebRequest $NuGetUri.AbsoluteUri -UseBasicParsing -OutFile $itemNuGetPath.FullName
 }
 
-#Install-Package -Name Microsoft.IdentityModel.Clients.ActiveDirectory -ProviderName NuGet -Source "https://www.nuget.org/api/v2/" -AllowPrereleaseVersions -SkipDependencies -Force -Destination "C:\Users\jason\Source\Repos\ADAL.PS\packages" -WhatIf
+## Run NuGet
+$argsNuget = New-Object System.Collections.Generic.List[string]
+$argsNuget.Add('restore')
+$argsNuget.Add($PackagesConfigFileInfo.FullName)
+if ($VerbosePreference -eq 'Continue') {
+    $argsNuget.Add('-Verbosity')
+    $argsNuget.Add('Detailed')
+}
+if ($NuGetConfigFileInfo) {
+    $argsNuget.Add('-ConfigFile')
+    $argsNuget.Add($NuGetConfigFileInfo.FullName)
+ }
+if ($OutputDirectoryInfo) {
+    $argsNuget.Add('-OutputDirectory')
+    $argsNuget.Add($OutputDirectoryInfo.FullName)
+ }
 
-#Install-Package -ProviderName NuGet -Source "https://www.nuget.org/api/v2/" -ConfigFile packages.config -AllowPrereleaseVersions -Destination "C:\Users\jason\Source\Repos\ADAL.PS\packages" -Force -SkipDependencies
-
-nuget restore $PackagesConfigPath -Verbosity Detailed -NonInteractive -ConfigFile $NuGetConfigPath
+ Use-StartProcess $NuGetFileInfo.FullName -ArgumentList $argsNuget
