@@ -2,7 +2,7 @@ param
 (
     # Directory used to base all relative paths
     [parameter(Mandatory=$false)]
-    [string] $RootDirectory = "..\",
+    [string] $BaseDirectory = "..\",
     # 
     [parameter(Mandatory=$false)]
     [string] $OutputDirectory = ".\build\release\",
@@ -20,16 +20,23 @@ param
     [string] $PackagesDirectory = ".\build\packages"
 )
 
+Write-Debug @"
+Environment Variables
+Processor_Architecture: $env:Processor_Architecture
+      CurrentDirectory: $((Get-Location).ProviderPath)
+          PSScriptRoot: $PSScriptRoot
+"@
+
 ## Initialize
 Remove-Module CommonFunctions -ErrorAction SilentlyContinue
-Import-Module .\CommonFunctions.psm1
+Import-Module "$PSScriptRoot\CommonFunctions.psm1" -ErrorAction Stop
 
-[System.IO.DirectoryInfo] $RootDirectoryInfo = Get-PathInfo $RootDirectory -InputPathType Directory -ErrorAction Stop
-[System.IO.DirectoryInfo] $OutputDirectoryInfo = Get-PathInfo $OutputDirectory -InputPathType Directory -DefaultDirectory $RootDirectoryInfo.FullName -ErrorAction SilentlyContinue
-[System.IO.DirectoryInfo] $SourceDirectoryInfo = Get-PathInfo $SourceDirectory -InputPathType Directory -DefaultDirectory $RootDirectoryInfo.FullName -ErrorAction Stop
+[System.IO.DirectoryInfo] $BaseDirectoryInfo = Get-PathInfo $BaseDirectory -InputPathType Directory -ErrorAction Stop
+[System.IO.DirectoryInfo] $OutputDirectoryInfo = Get-PathInfo $OutputDirectory -InputPathType Directory -DefaultDirectory $BaseDirectoryInfo.FullName -ErrorAction SilentlyContinue
+[System.IO.DirectoryInfo] $SourceDirectoryInfo = Get-PathInfo $SourceDirectory -InputPathType Directory -DefaultDirectory $BaseDirectoryInfo.FullName -ErrorAction Stop
 [System.IO.FileInfo] $ModuleManifestFileInfo = Get-PathInfo $ModuleManifestPath -DefaultDirectory $SourceDirectoryInfo.FullName -DefaultFilename "*.psd1" -ErrorAction Stop
-[System.IO.FileInfo] $PackagesConfigFileInfo = Get-PathInfo $PackagesConfigPath -DefaultDirectory $RootDirectoryInfo.FullName -DefaultFilename "packages.config" -ErrorAction Stop
-[System.IO.DirectoryInfo] $PackagesDirectoryInfo = Get-PathInfo $PackagesDirectory -InputPathType Directory -DefaultDirectory $RootDirectoryInfo.FullName -ErrorAction SilentlyContinue
+[System.IO.FileInfo] $PackagesConfigFileInfo = Get-PathInfo $PackagesConfigPath -DefaultDirectory $BaseDirectoryInfo.FullName -DefaultFilename "packages.config" -ErrorAction Stop
+[System.IO.DirectoryInfo] $PackagesDirectoryInfo = Get-PathInfo $PackagesDirectory -InputPathType Directory -DefaultDirectory $BaseDirectoryInfo.FullName -ErrorAction SilentlyContinue
 
 ## Read Module Manifest
 $ModuleManifest = Import-PowershellDataFile $ModuleManifestFileInfo.FullName
@@ -40,7 +47,7 @@ Assert-DirectoryExists $ModuleOutputDirectoryInfo -ErrorAction Stop | Out-Null
 Copy-Item ("{0}\*" -f $SourceDirectoryInfo.FullName) -Destination $ModuleOutputDirectoryInfo.FullName -Recurse -Force
 
 ## NuGet Restore
-.\Restore-NugetPackages.ps1 -PackagesConfigPath $PackagesConfigFileInfo.FullName -OutputDirectory $PackagesDirectoryInfo.FullName
+&$PSScriptRoot\Restore-NugetPackages.ps1 -PackagesConfigPath $PackagesConfigFileInfo.FullName -OutputDirectory $PackagesDirectoryInfo.FullName
 
 ## Read Packages Configuration
 $xmlPackagesConfig = New-Object xml

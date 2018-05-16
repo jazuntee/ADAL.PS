@@ -4,9 +4,36 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "echo",
+            "label": "Build PSModule",
             "type": "shell",
-            "command": "echo Hello"
+            "windows": {
+                "options": {
+                    "shell": {
+                        "executable": "C:\\system32\\WindowsPowerShell\\v1.0\\powershell.exe",
+                        "args": [
+                           "-NoProfile",
+                           "-ExecutionPolicy",
+                           "Bypass"
+                        ]
+                    }
+                }
+            },
+            "command": ".\\build\\Build-PSModule.ps1",
+            "args": [
+                "-BaseDirectory",
+                ".\\"
+                //"-Verbose",
+                //"-Debug"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            }
+
         }
     ]
 }
