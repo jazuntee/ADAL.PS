@@ -1,0 +1,19 @@
+{
+  "version": "0.2.1",
+  "tasks": [
+    {
+      "taskName": "Build PSModule",
+      "appliesTo": "/",
+      "type": "launch",
+      "contextType": "build",
+      "command": "%windir%\\sysnative\\WindowsPowerShell\\v1.0\\powershell.exe",
+      "args": [
+        "-Command",
+        ".\\build\\Build-PSModule.ps1",
+        "-BaseDirectory",
+        ".\\",
+        "-Debug"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "version": "0.2.1",
+  "defaults": {},
+  "configurations": [
+    {
+      "type": "default",
+      "name": "Launch Interactive PowerShell",
+      "project": "C:\\Windows\\sysnative\\WindowsPowerShell\\v1.0\\powershell.exe",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-NoExit",
+        "-Command",
+        ".\\Launch-PSModule.ps1",
+        "-Verbose"
+      ],
+      "currentDir": "${workspaceRoot}",
+      "noDebug": true
+    },
+    {
+      "type": "powershell",
+      "name": "Run PSModule Tests",
+      "project": ".\\tests\\ADAL.PS.tests.ps1"
+    }
+  ]
+}
