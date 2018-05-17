@@ -138,8 +138,7 @@ function Get-ADALToken {
 
         # Indicates whether AcquireToken should automatically prompt only if necessary or whether it should prompt regardless of whether there is a cached token.
         [Parameter(Mandatory=$false, ParameterSetName='Implicit')]
-        #[Microsoft.IdentityModel.Clients.ActiveDirectory.PromptBehavior] $PromptBehavior = 'Auto',
-        [Microsoft.IdentityModel.Clients.ActiveDirectory.PromptBehavior] $PromptBehavior,
+        [Microsoft.IdentityModel.Clients.ActiveDirectory.PromptBehavior] $PromptBehavior = 'Auto',
 
         # Identifier of the user the token is requested for.
         [Parameter(Mandatory=$false, ParameterSetName='Implicit')]
@@ -147,8 +146,7 @@ function Get-ADALToken {
 
         # Type of identifier of the user the token is requested for.
         [Parameter(Mandatory=$false, ParameterSetName='Implicit')]
-        #[Microsoft.IdentityModel.Clients.ActiveDirectory.UserIdentifierType] $UserIdType = 'OptionalDisplayableId',
-        [Microsoft.IdentityModel.Clients.ActiveDirectory.UserIdentifierType] $UserIdType,
+        [Microsoft.IdentityModel.Clients.ActiveDirectory.UserIdentifierType] $UserIdType = 'OptionalDisplayableId',
 
         # This parameter will be appended as is to the query string in the HTTP authentication request to the authority.
         [Parameter(Mandatory=$false, ParameterSetName='Implicit')]
