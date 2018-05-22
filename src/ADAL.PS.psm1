@@ -8,7 +8,7 @@ function Get-ADALAuthenticationContext {
     param
     (
         # Address of the authority to issue token.
-        [parameter(Mandatory=$false)]
+        [Parameter(Mandatory=$false)]
         [string] $Authority = 'https://login.microsoftonline.com/common'
     )
 
@@ -23,10 +23,10 @@ function New-ADALUserIdentifier {
     param
     (
         # Id of user
-        [parameter(Mandatory=$false)]
+        [Parameter(Mandatory=$false)]
         [string] $Id,
         # Type of user identifier
-        [parameter(Mandatory=$false)]
+        [Parameter(Mandatory=$false)]
         [Microsoft.IdentityModel.Clients.ActiveDirectory.UserIdentifierType] $Type = 'OptionalDisplayableId'
     )
 
@@ -43,16 +43,16 @@ function New-ADALClientCredential {
     param
     (
         # Identifier and secure secret of the client requesting the token.
-        [parameter(Mandatory=$true, ValueFromPipeline=$true, ParameterSetName='InputObject', Position=1)]
+        [Parameter(Mandatory=$true, ValueFromPipeline=$true, ParameterSetName='InputObject', Position=1)]
         [object] $InputObject,
         # Identifier of the client requesting the token.
-        [parameter(Mandatory=$true, Position=1)]
+        [Parameter(Mandatory=$true, Position=1)]
         [string] $ClientId,
         # Secure secret of the client requesting the token.
-        [parameter(Mandatory=$true, ParameterSetName='ClientSecret', Position=2)]
+        [Parameter(Mandatory=$true, ParameterSetName='ClientSecret', Position=2)]
         [securestring] $ClientSecret,
         # Client assertion certificate of the client requesting the token.
-        [parameter(Mandatory=$true, ParameterSetName="ClientAssertionCertificate", Position=2)]
+        [Parameter(Mandatory=$true, ParameterSetName="ClientAssertionCertificate", Position=2)]
         [System.Security.Cryptography.X509Certificates.X509Certificate2] $ClientAssertionCertificate
     )
 
@@ -88,52 +88,52 @@ function Get-ADALToken {
     param
     (
         # Tenant identifier of the authority to issue token.
-        [parameter(Mandatory=$false)]
+        [Parameter(Mandatory=$false)]
         [string] $TenantId = "common",
 
         # Address of the authority to issue token. This value overrides TenantId.
-        [parameter(Mandatory=$false)]
+        [Parameter(Mandatory=$false)]
         [string] $Authority = "https://login.microsoftonline.com/$TenantId",
 
         # Identifier of the target resource that is the recipient of the requested token.
-        [parameter(Mandatory=$true)]
+        [Parameter(Mandatory=$true)]
         [string] $Resource,
 
         # Identifier of the client requesting the token.
-        [parameter(Mandatory=$true)]
+        [Parameter(Mandatory=$true)]
         [string] $ClientId,
 
         # Secure secret of the client requesting the token.
-        [parameter(Mandatory=$true, ParameterSetName='ClientSecret')]
-        [parameter(Mandatory=$true, ParameterSetName='ClientSecret-AuthorizationCode')]
-        [parameter(Mandatory=$true, ParameterSetName='ClientSecret-OnBehalfOf')]
+        [Parameter(Mandatory=$true, ParameterSetName='ClientSecret')]
+        [Parameter(Mandatory=$true, ParameterSetName='ClientSecret-AuthorizationCode')]
+        [Parameter(Mandatory=$true, ParameterSetName='ClientSecret-OnBehalfOf')]
         [securestring] $ClientSecret,
 
         # Client assertion certificate of the client requesting the token.
-        [parameter(Mandatory=$true, ParameterSetName='ClientAssertionCertificate')]
-        [parameter(Mandatory=$true, ParameterSetName='ClientAssertionCertificate-AuthorizationCode')]
-        [parameter(Mandatory=$true, ParameterSetName='ClientAssertionCertificate-OnBehalfOf')]
+        [Parameter(Mandatory=$true, ParameterSetName='ClientAssertionCertificate')]
+        [Parameter(Mandatory=$true, ParameterSetName='ClientAssertionCertificate-AuthorizationCode')]
+        [Parameter(Mandatory=$true, ParameterSetName='ClientAssertionCertificate-OnBehalfOf')]
         [System.Security.Cryptography.X509Certificates.X509Certificate2] $ClientAssertionCertificate,
 
         # The authorization code received from service authorization endpoint.
-        [parameter(Mandatory=$true, ParameterSetName='ClientSecret-AuthorizationCode')]
-        [parameter(Mandatory=$true, ParameterSetName='ClientAssertionCertificate-AuthorizationCode')]
+        [Parameter(Mandatory=$true, ParameterSetName='ClientSecret-AuthorizationCode')]
+        [Parameter(Mandatory=$true, ParameterSetName='ClientAssertionCertificate-AuthorizationCode')]
         [string] $AuthorizationCode,
 
         # Assertion representing the user.
-        [parameter(Mandatory=$true, ParameterSetName='ClientSecret-OnBehalfOf')]
-        [parameter(Mandatory=$true, ParameterSetName='ClientAssertionCertificate-OnBehalfOf')]
+        [Parameter(Mandatory=$true, ParameterSetName='ClientSecret-OnBehalfOf')]
+        [Parameter(Mandatory=$true, ParameterSetName='ClientAssertionCertificate-OnBehalfOf')]
         [string] $UserAssertion,
 
         # Type of the assertion representing the user.
-        [parameter(Mandatory=$false, ParameterSetName='ClientSecret-OnBehalfOf')]
-        [parameter(Mandatory=$false, ParameterSetName='ClientAssertionCertificate-OnBehalfOf')]
+        [Parameter(Mandatory=$false, ParameterSetName='ClientSecret-OnBehalfOf')]
+        [Parameter(Mandatory=$false, ParameterSetName='ClientAssertionCertificate-OnBehalfOf')]
         [string] $UserAssertionType,
 
         # Address to return to upon receiving a response from the authority.
         [Parameter(Mandatory=$false, ParameterSetName='Implicit')]
-        [parameter(Mandatory=$false, ParameterSetName='ClientSecret-AuthorizationCode')]
-        [parameter(Mandatory=$false, ParameterSetName='ClientAssertionCertificate-AuthorizationCode')]
+        [Parameter(Mandatory=$false, ParameterSetName='ClientSecret-AuthorizationCode')]
+        [Parameter(Mandatory=$false, ParameterSetName='ClientAssertionCertificate-AuthorizationCode')]
         [uri] $RedirectUri = 'urn:ietf:wg:oauth:2.0:oob',
 
         # Indicates whether AcquireToken should automatically prompt only if necessary or whether it should prompt regardless of whether there is a cached token.

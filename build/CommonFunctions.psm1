@@ -5,10 +5,10 @@ function Get-RelativePath {
     [OutputType([string[]])]
     param (
         # Input Paths
-        [parameter(Mandatory=$true, ValueFromPipeline=$true, Position=1)]
+        [Parameter(Mandatory=$true, ValueFromPipeline=$true, Position=1)]
         [string[]] $Paths,
         # Directory to base relative paths. Default is current directory.
-        [parameter(Mandatory=$false, Position=2)]
+        [Parameter(Mandatory=$false, Position=2)]
         [string] $BaseDirectory = (Get-Location).ProviderPath
     )
 
@@ -29,10 +29,10 @@ function Get-FullPath {
     [OutputType([string[]])]
     param (
         # Input Paths
-        [parameter(Mandatory=$true, ValueFromPipeline=$true, Position=1)]
+        [Parameter(Mandatory=$true, ValueFromPipeline=$true, Position=1)]
         [string[]] $Paths,
         # Directory to base relative paths. Default is current directory.
-        [parameter(Mandatory=$false, Position=2)]
+        [Parameter(Mandatory=$false, Position=2)]
         [string] $BaseDirectory = (Get-Location).ProviderPath
     )
 
@@ -53,11 +53,17 @@ function Resolve-FullPath {
     [OutputType([string[]])]
     param (
         # Input Paths
-        [parameter(Mandatory=$true, ValueFromPipeline=$true, Position=1)]
+        [Parameter(Mandatory=$true, ValueFromPipeline=$true, Position=1)]
         [string[]] $Paths,
         # Directory to base relative paths. Default is current directory.
-        [parameter(Mandatory=$false, Position=2)]
-        [string] $BaseDirectory = (Get-Location).ProviderPath
+        [Parameter(Mandatory=$false, Position=2)]
+        [string] $BaseDirectory = (Get-Location).ProviderPath,
+        # Resolves items in all child directories of the specified locations.
+        [Parameter(Mandatory=$false)]
+        [switch] $Recurse,
+        # Resolves items in all parent directories of the specified locations.
+        [Parameter(Mandatory=$false)]
+        [switch] $RecurseUp
     )
 
     process {
@@ -66,8 +72,25 @@ function Resolve-FullPath {
             if (![System.IO.Path]::IsPathRooted($AbsolutePath)) {
                 $AbsolutePath = (Join-Path $BaseDirectory $AbsolutePath)
             }
-            [string] $AbsolutePath = Resolve-Path $AbsolutePath
-            Write-Output $AbsolutePath
+            [string[]] $AbsoluteOutputPaths = Resolve-Path $AbsolutePath
+            if ($Recurse) {
+                $RecurseBaseDirectory = Join-Path (Split-Path $AbsolutePath -Parent) "**"
+                $RecurseFilename = Split-Path $AbsolutePath -Leaf
+                $RecursePath = Join-Path $RecurseBaseDirectory $RecurseFilename
+                $AbsoluteOutputPaths += Resolve-Path $RecursePath
+            }
+            if ($RecurseUp) {
+                $RecurseBaseDirectory = Split-Path $AbsolutePath -Parent
+                $RecurseFilename = Split-Path $AbsolutePath -Leaf
+                while ($RecurseBaseDirectory -match "[\\/]") {
+                    $RecurseBaseDirectory = Split-Path $RecurseBaseDirectory -Parent
+                    if ($RecurseBaseDirectory) {
+                        $RecursePath = Join-Path $RecurseBaseDirectory $RecurseFilename
+                        $AbsoluteOutputPaths += Resolve-Path $RecursePath  
+                    }
+                }
+            }
+            Write-Output $AbsoluteOutputPaths
         }
     }
 }
@@ -76,21 +99,21 @@ function Get-PathInfo {
     [CmdletBinding()]
     param (
         # Input Paths
-        [parameter(Mandatory=$true, ValueFromPipeline=$true, Position=1)]
+        [Parameter(Mandatory=$true, ValueFromPipeline=$true, Position=1)]
         [AllowEmptyString()]
         [string[]] $Paths,
         # Specifies the type of output path when the path does not exist. By default, it will guess path type. If path exists, this parameter is ignored.
-        [parameter(Mandatory=$false, Position=2)]
+        [Parameter(Mandatory=$false, Position=2)]
         [ValidateSet("Directory", "File")]
         [string] $InputPathType,
         # Root directory to base relative paths. Default is current directory.
-        [parameter(Mandatory=$false, Position=3)]
+        [Parameter(Mandatory=$false, Position=3)]
         [string] $DefaultDirectory = (Get-Location).ProviderPath,
         # Filename to append to path if no filename is present.
-        [parameter(Mandatory=$false, Position=4)]
+        [Parameter(Mandatory=$false, Position=4)]
         [string] $DefaultFilename,
         # 
-        [parameter(Mandatory=$false)]
+        [Parameter(Mandatory=$false)]
         [switch] $SkipEmptyPaths
     )
 
@@ -150,10 +173,10 @@ function Assert-DirectoryExists {
     [OutputType([string[]])]
     param (
         # Directories
-        [parameter(Mandatory=$true, ValueFromPipeline=$true, Position=0)]
+        [Parameter(Mandatory=$true, ValueFromPipeline=$true, Position=0)]
         [object[]] $InputObjects,
         # Directory to base relative paths. Default is current directory.
-        [parameter(Mandatory=$false, Position=2)]
+        [Parameter(Mandatory=$false, Position=2)]
         [string] $BaseDirectory = (Get-Location).ProviderPath
     )
     process {
