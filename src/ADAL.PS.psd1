@@ -93,10 +93,10 @@ PrivateData = @{
         Tags = 'Microsoft', 'Identity', 'Azure', 'AzureActiveDirectory', 'AzureAD', 'AAD', 'ActiveDirectory', 'AD', 'Microsoft.IdentityModel.Clients.ActiveDirectory', 'ActiveDirectoryAuthenticationLibrary', 'ADAL', 'OAuth', 'OpenIdConnect', 'OIDC'
 
         # A URL to the license for this module.
-        LicenseUri = 'https://raw.githubusercontent.com/AzureAD/azure-activedirectory-library-for-dotnet/dev/LICENSE'
+        LicenseUri = 'https://raw.githubusercontent.com/jasoth/ADAL.PS/master/LICENSE'
 
         # A URL to the main website for this project.
-        ProjectUri = 'https://github.com/AzureAD/azure-activedirectory-library-for-dotnet/wiki'
+        ProjectUri = 'https://github.com/jasoth/ADAL.PS'
 
         # A URL to an icon representing this module.
         # IconUri = ''
