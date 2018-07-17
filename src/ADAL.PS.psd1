@@ -10,7 +10,7 @@
 RootModule = 'ADAL.PS.psm1'
 
 # Version number of this module.
-ModuleVersion = '3.19.4.2'
+ModuleVersion = '3.19.8.1'
 
 # ID used to uniquely identify this module
 GUID = '2d417b96-5b7c-4e1b-b183-1ec4bce19746'
@@ -49,8 +49,8 @@ ProcessorArchitecture = 'Amd64'
 # RequiredModules = @()
 
 # Assemblies that must be loaded prior to importing this module
-#RequiredAssemblies = 
-               #'..\build\packages\Microsoft.IdentityModel.Clients.ActiveDirectory.3.19.4\lib\net45\Microsoft.IdentityModel.Clients.ActiveDirectory.dll', 
+#RequiredAssemblies =
+               #'..\build\packages\Microsoft.IdentityModel.Clients.ActiveDirectory.3.19.4\lib\net45\Microsoft.IdentityModel.Clients.ActiveDirectory.dll',
                #'..\build\packages\Microsoft.IdentityModel.Clients.ActiveDirectory.3.19.4\lib\net45\Microsoft.IdentityModel.Clients.ActiveDirectory.Platform.dll'
 
 # Script files (.ps1) that are run in the caller's environment prior to importing this module.
