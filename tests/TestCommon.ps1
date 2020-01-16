@@ -673,7 +673,7 @@ function Add-AzureAdClientSecret {
                 $PasswordCredential = Invoke-RestMethod -Method Post -Uri "https://graph.microsoft.com/v1.0/applications/$($AzureADObject.id)/addPassword" -Headers $MSGraphHeaders -ContentType 'application/json' -Body (ConvertTo-Json @{
                     passwordCredential = @{
                         endDateTime = (Get-Date).AddDays(1).ToString('O')
-                        displayName = "MSAL.PS"
+                        displayName = "ADAL.PS"
                     }
                 })
                 break
@@ -682,7 +682,7 @@ function Add-AzureAdClientSecret {
                 $PasswordCredential = Invoke-RestMethod -Method Post -Uri "https://graph.microsoft.com/beta/servicePrincipals/$($AzureADObject.id)/addPassword" -Headers $MSGraphHeaders -ContentType 'application/json' -Body (ConvertTo-Json @{
                     passwordCredential = @{
                         endDateTime = (Get-Date).AddDays(1).ToString('O')
-                        displayName = "MSAL.PS"
+                        displayName = "ADAL.PS"
                     }
                 })
                 break
@@ -727,7 +727,7 @@ function Add-AzureAdClientCertificate {
                             type = "AsymmetricX509Cert"
                             usage = "Verify"
                             key = ConvertTo-Base64String $ClientCertificate.GetRawCertData()
-                            displayName = "MSAL.PS"
+                            displayName = "ADAL.PS"
                         }
                     )
                 }) | Out-Null
@@ -742,7 +742,7 @@ function Add-AzureAdClientCertificate {
                             type = "AsymmetricX509Cert"
                             usage = "Verify"
                             key = ConvertTo-Base64String $ClientCertificate.GetRawCertData()
-                            displayName = "MSAL.PS"
+                            displayName = "ADAL.PS"
                         }
                     )
                 }) | Out-Null
