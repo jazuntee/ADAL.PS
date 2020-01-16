@@ -10,7 +10,7 @@
 RootModule = 'ADAL.PS.psm1'
 
 # Version number of this module.
-ModuleVersion = '5.2.5.2'
+ModuleVersion = '5.2.5.3'
 
 # ID used to uniquely identify this module
 GUID = '2d417b96-5b7c-4e1b-b183-1ec4bce19746'
@@ -22,10 +22,14 @@ Author = 'Jason Thompson'
 CompanyName = 'Microsoft Corporation'
 
 # Copyright statement for this module
-Copyright = '(c) 2020 Microsoft Corporation. All rights reserved.'
+Copyright = '(c) 2020 Jason Thompson. All rights reserved.'
 
 # Description of the functionality provided by this module
-Description = 'PowerShell module for ADAL. ADAL.NET (Microsoft.IdentityModel.Clients.ActiveDirectory) is an authentication library which enables you to acquire tokens from Azure AD and ADFS, to access protected Web APIs (Microsoft APIs or applications registered with Azure Active Directory).'
+Description = @'
+The ADAL.PS PowerShell module wraps ADAL.NET functionality into PowerShell-friendly cmdlets and is not supported by Microsoft. Microsoft support does not extend beyond the underlying ADAL.NET library. For any inquiries regarding the PowerShell module itself, you may contact the author on GitHub or PowerShell Gallery.
+Active Directory Authentication Library for .NET (ADAL.NET) is an easy to use authentication library. You can use ADAL.NET to acquire security tokens to access protected Web APIs, for instance Microsoft Graph, or another Web APIs.
+Microsoft has stated that "ADAL.NET is in maintenance mode and no new features will be added to ADAL.NET anymore. All our ongoing efforts will be focused on improving the new MSAL.NET." You should consider using the MSAL.PS PowerShell module which uses the new MSAL.NET library.
+'@
 
 # Minimum version of the Windows PowerShell engine required by this module
 PowerShellVersion = '3.0'
@@ -62,11 +66,21 @@ DotNetFrameworkVersion = '4.5'
 
 # Modules to import as nested modules of the module specified in RootModule/ModuleToProcess
 NestedModules = @(
+    '.\Clear-AdalTokenCache.ps1'
+    '.\Get-AdalAuthenticationContext.ps1'
     '.\Get-AdalToken.ps1'
+    '.\New-AdalClientCredential.ps1'
+    '.\New-AdalUserIdentifier.ps1'
 )
 
 # Functions to export from this module
-FunctionsToExport = '*'
+FunctionsToExport = @(
+    'Clear-AdalTokenCache'
+    'Get-AdalAuthenticationContext'
+    'Get-AdalToken'
+    'New-AdalClientCredential'
+    'New-AdalUserIdentifier'
+)
 
 # Cmdlets to export from this module
 CmdletsToExport = '*'

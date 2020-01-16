@@ -1,5 +1,7 @@
 # ADAL.PS
-This module is intended to wrap ADAL.NET functionality into PowerShell friendly cmdlets for easy generation and use of access tokens in PowerShell. This project is in no way supported by Microsoft.
+The ADAL.PS PowerShell module wraps ADAL.NET functionality into PowerShell-friendly cmdlets and is not supported by Microsoft. Microsoft support does not extend beyond the underlying ADAL.NET library. For any inquiries regarding the PowerShell module itself, you may contact the author on GitHub or PowerShell Gallery.
+Active Directory Authentication Library for .NET (ADAL.NET) is an easy to use authentication library. You can use ADAL.NET to acquire security tokens to access protected Web APIs, for instance Microsoft Graph, or another Web APIs.
+Microsoft has stated that "ADAL.NET is in maintenance mode and no new features will be added to ADAL.NET anymore. All our ongoing efforts will be focused on improving the new MSAL.NET." You should consider using the MSAL.PS PowerShell module which uses the new MSAL.NET library.
 
 ## Getting Started
 Dependencies: [ADAL.NET (Microsoft.IdentityModel.Clients.ActiveDirectory)](https://github.com/AzureAD/azure-activedirectory-library-for-dotnet/wiki)

@@ -2,7 +2,7 @@ param
 (
 	#
     [parameter(Mandatory=$false)]
-    [string] $ModulePath = ".\release\ADAL.PS\5.2.5.2",
+    [string] $ModulePath = ".\release\ADAL.PS\5.2.5.3",
     #
     [parameter(Mandatory=$true)]
     [string] $NuGetApiKey
