@@ -10,7 +10,7 @@
 RootModule = 'ADAL.PS.psm1'
 
 # Version number of this module.
-ModuleVersion = '3.19.8.1'
+ModuleVersion = '5.2.5.1'
 
 # ID used to uniquely identify this module
 GUID = '2d417b96-5b7c-4e1b-b183-1ec4bce19746'
@@ -22,7 +22,7 @@ Author = 'Jason Thompson'
 CompanyName = 'Microsoft Corporation'
 
 # Copyright statement for this module
-Copyright = '(c) 2018 Microsoft Corporation. All rights reserved.'
+Copyright = '(c) 2020 Microsoft Corporation. All rights reserved.'
 
 # Description of the functionality provided by this module
 Description = 'PowerShell module for ADAL. ADAL.NET (Microsoft.IdentityModel.Clients.ActiveDirectory) is an authentication library which enables you to acquire tokens from Azure AD and ADFS, to access protected Web APIs (Microsoft APIs or applications registered with Azure Active Directory).'
@@ -40,18 +40,16 @@ PowerShellVersion = '3.0'
 DotNetFrameworkVersion = '4.5'
 
 # Minimum version of the common language runtime (CLR) required by this module
-CLRVersion = '4.0'
+# CLRVersion = ''
 
 # Processor architecture (None, X86, Amd64) required by this module
-ProcessorArchitecture = 'Amd64'
+# ProcessorArchitecture = ''
 
 # Modules that must be imported into the global environment prior to importing this module
 # RequiredModules = @()
 
 # Assemblies that must be loaded prior to importing this module
-#RequiredAssemblies =
-               #'..\build\packages\Microsoft.IdentityModel.Clients.ActiveDirectory.3.19.4\lib\net45\Microsoft.IdentityModel.Clients.ActiveDirectory.dll',
-               #'..\build\packages\Microsoft.IdentityModel.Clients.ActiveDirectory.3.19.4\lib\net45\Microsoft.IdentityModel.Clients.ActiveDirectory.Platform.dll'
+RequiredAssemblies = '..\build\packages\Microsoft.IdentityModel.Clients.ActiveDirectory.5.2.5\lib\net45\Microsoft.IdentityModel.Clients.ActiveDirectory.dll'
 
 # Script files (.ps1) that are run in the caller's environment prior to importing this module.
 # ScriptsToProcess = @()
@@ -63,7 +61,9 @@ ProcessorArchitecture = 'Amd64'
 # FormatsToProcess = @()
 
 # Modules to import as nested modules of the module specified in RootModule/ModuleToProcess
-# NestedModules = @()
+NestedModules = @(
+    '.\Get-AdalToken.ps1'
+)
 
 # Functions to export from this module
 FunctionsToExport = '*'
