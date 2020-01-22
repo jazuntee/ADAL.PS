@@ -20,14 +20,14 @@ $MSGraphToken = Get-MSGraphToken -ErrorAction Stop @AppConfigAutomation
 
 try {
     ## Create applications in tenant for testing.
-    $appPublicClient,$spPublicClient = New-TestAzureAdPublicClient -MSGraphToken $MSGraphToken
-    $appConfidentialClient,$spConfidentialClient = New-TestAzureAdConfidentialClient -MSGraphToken $MSGraphToken
+    $appPublicClient,$spPublicClient = New-TestAzureAdPublicClient -AdminConsent -MSGraphToken $MSGraphToken
+    $appConfidentialClient,$spConfidentialClient = New-TestAzureAdConfidentialClient -AdminConsent -MSGraphToken $MSGraphToken
     $appConfidentialClientSecret,$ClientSecret = $appConfidentialClient | Add-AzureAdClientSecret -MSGraphToken $MSGraphToken
     $appConfidentialClientCertificate,$ClientCertificate = $appConfidentialClient | Add-AzureAdClientCertificate -MSGraphToken $MSGraphToken
 
     ## Add delay to allow time for application configuration and credentials to propogate.
     Write-Host "`nWaiting for application configuration and credentials to propogate..."
-    Start-Sleep -Seconds 60
+    Start-Sleep -Seconds 30
 
     ## Perform Tests
     Describe 'Get-AdalToken' {

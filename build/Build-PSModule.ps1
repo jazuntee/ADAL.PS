@@ -3,21 +3,24 @@ param
     # Directory used to base all relative paths
     [parameter(Mandatory=$false)]
     [string] $BaseDirectory = "..\",
-    # 
+    #
     [parameter(Mandatory=$false)]
     [string] $OutputDirectory = ".\build\release\",
-    # 
+    #
     [parameter(Mandatory=$false)]
     [string] $SourceDirectory = ".\src\",
-    # 
+    #
     [parameter(Mandatory=$false)]
     [string] $ModuleManifestPath,
-    # 
+    #
     [parameter(Mandatory=$false)]
     [string] $PackagesConfigPath = ".\packages.config",
-    # 
+    #
     [parameter(Mandatory=$false)]
-    [string] $PackagesDirectory = ".\build\packages"
+    [string] $PackagesDirectory = ".\build\packages",
+    #
+    [parameter(Mandatory=$false)]
+    [string] $LicensePath = ".\LICENSE"
 )
 
 Write-Debug @"
@@ -37,6 +40,7 @@ Import-Module "$PSScriptRoot\CommonFunctions.psm1" -ErrorAction Stop
 [System.IO.FileInfo] $ModuleManifestFileInfo = Get-PathInfo $ModuleManifestPath -DefaultDirectory $SourceDirectoryInfo.FullName -DefaultFilename "*.psd1" -ErrorAction Stop
 [System.IO.FileInfo] $PackagesConfigFileInfo = Get-PathInfo $PackagesConfigPath -DefaultDirectory $BaseDirectoryInfo.FullName -DefaultFilename "packages.config" -ErrorAction Stop
 [System.IO.DirectoryInfo] $PackagesDirectoryInfo = Get-PathInfo $PackagesDirectory -InputPathType Directory -DefaultDirectory $BaseDirectoryInfo.FullName -ErrorAction SilentlyContinue
+[System.IO.FileInfo] $LicenseFileInfo = Get-PathInfo $LicensePath -DefaultDirectory $BaseDirectoryInfo.FullName -DefaultFilename "LICENSE" -ErrorAction Stop
 
 ## Read Module Manifest
 $ModuleManifest = Import-PowershellDataFile $ModuleManifestFileInfo.FullName
@@ -45,6 +49,7 @@ $ModuleManifest = Import-PowershellDataFile $ModuleManifestFileInfo.FullName
 ## Copy Source Module Code to Module Output Directory
 Assert-DirectoryExists $ModuleOutputDirectoryInfo -ErrorAction Stop | Out-Null
 Copy-Item ("{0}\*" -f $SourceDirectoryInfo.FullName) -Destination $ModuleOutputDirectoryInfo.FullName -Recurse -Force
+Copy-Item $LicenseFileInfo.FullName -Destination (Join-Path $ModuleOutputDirectoryInfo.FullName License.txt) -Force
 
 ## NuGet Restore
 &$PSScriptRoot\Restore-NugetPackages.ps1 -PackagesConfigPath $PackagesConfigFileInfo.FullName -OutputDirectory $PackagesDirectoryInfo.FullName
@@ -68,6 +73,9 @@ $ModuleManifestOutputFileInfo = $ModuleFileListFileInfo | Where-Object Name -eq 
 
 $ModuleFileList = Get-RelativePath $ModuleFileListFileInfo.FullName -BaseDirectory $ModuleOutputDirectoryInfo.FullName -ErrorAction Stop
 $ModuleRequiredAssemblies = Get-RelativePath $ModuleRequiredAssembliesFileInfo.FullName -BaseDirectory $ModuleOutputDirectoryInfo.FullName -ErrorAction Stop
+
+## Clear RequiredAssemblies
+(Get-Content $ModuleManifestOutputFileInfo.FullName -Raw) -replace "(?s)RequiredAssemblies\ =\ @\([^)]*\)","# RequiredAssemblies = @()" | Set-Content $ModuleManifestOutputFileInfo.FullName
 
 ## Update Module Manifest in Module Output Directory
 Update-ModuleManifest -Path $ModuleManifestOutputFileInfo.FullName -RequiredAssemblies $ModuleRequiredAssemblies -FileList $ModuleFileList
