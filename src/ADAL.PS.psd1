@@ -10,7 +10,7 @@
 RootModule = 'ADAL.PS.psm1'
 
 # Version number of this module.
-ModuleVersion = '5.2.6.1'
+ModuleVersion = '5.2.7.1'
 
 # ID used to uniquely identify this module
 GUID = '2d417b96-5b7c-4e1b-b183-1ec4bce19746'
@@ -27,7 +27,9 @@ Copyright = '(c) 2020 Jason Thompson. All rights reserved.'
 # Description of the functionality provided by this module
 Description = @'
 The ADAL.PS PowerShell module wraps ADAL.NET functionality into PowerShell-friendly cmdlets and is not supported by Microsoft. Microsoft support does not extend beyond the underlying ADAL.NET library. For any inquiries regarding the PowerShell module itself, you may contact the author on GitHub or PowerShell Gallery.
+
 Active Directory Authentication Library for .NET (ADAL.NET) is an easy to use authentication library. You can use ADAL.NET to acquire security tokens to access protected Web APIs, for instance Microsoft Graph, or another Web APIs.
+
 Microsoft has stated that "ADAL.NET is in maintenance mode and no new features will be added to ADAL.NET anymore. All our ongoing efforts will be focused on improving the new MSAL.NET." You should consider using the MSAL.PS PowerShell module which uses the new MSAL.NET library.
 '@
 
@@ -54,7 +56,7 @@ DotNetFrameworkVersion = '4.5'
 
 # Assemblies that must be loaded prior to importing this module
 RequiredAssemblies = @(
-    '..\build\packages\Microsoft.IdentityModel.Clients.ActiveDirectory.5.2.6\lib\net45\Microsoft.IdentityModel.Clients.ActiveDirectory.dll'
+    '..\build\packages\Microsoft.IdentityModel.Clients.ActiveDirectory.5.2.7\lib\net45\Microsoft.IdentityModel.Clients.ActiveDirectory.dll'
 )
 
 # Script files (.ps1) that are run in the caller's environment prior to importing this module.
