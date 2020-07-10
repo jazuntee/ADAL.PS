@@ -21,3 +21,4 @@ steps:
   inputs:
     filePath: '$(System.DefaultWorkingDirectory)\build\Build-PSModule.ps1'
     pwsh: true
+    
