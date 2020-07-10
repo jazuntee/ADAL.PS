@@ -19,5 +19,5 @@ steps:
   displayName: 'Run a multi-line script'
 - task: PowerShell@2
   inputs:
-    filePath: 'build\Build-PSModule.ps1'
+    filePath: '$(System.DefaultWorkingDirectory)\build\Build-PSModule.ps1'
     pwsh: true
