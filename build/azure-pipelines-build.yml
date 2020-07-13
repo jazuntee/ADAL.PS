@@ -12,7 +12,7 @@ trigger:
     include:
     - src/*
 
-name: '$(Build.DefinitionName)_$(Date:yyyyMMdd)_$(Rev:.r)'
+#name: '$(Build.DefinitionName)_$(Date:yyyyMMdd)_$(Rev:.r)'
 
 variables:
   version.MajorMinorPatch: '5.2.7' # Manually adjust the version number as needed for semantic versioning.
@@ -46,20 +46,24 @@ steps:
     archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.Repository.Name)_FromScript.zip'
     replaceExistingArchive: true
 
-- task: NuGetCommand@2
-  inputs:
-    command: 'restore'
-    restoreSolution: './packages.config'
-    feedsToUse: 'config'
-    nugetConfigPath: './NuGet.config'
-
 - task: CopyFiles@2
   inputs:
     SourceFolder: './src'
     Contents: '**'
     TargetFolder: '$(Build.ArtifactStagingDirectory)/$(Build.Repository.Name)'
-    CleanTargetFolder: true
     preserveTimestamp: true
+
+- task: NuGetCommand@2
+  inputs:
+    command: 'restore'
+    restoreSolution: './packages.config'
+    feedsToUse: 'select'
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'PowerShell Module'
+    publishLocation: 'Container'
 
 - task: ArchiveFiles@2
   inputs:
@@ -68,13 +72,6 @@ steps:
     archiveType: 'zip'
     archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.Repository.Name)_$(versionNumber).zip'
     replaceExistingArchive: true
-    verbose: true
-
-- task: PublishBuildArtifacts@1
-  inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)/$(Build.Repository.Name)'
-    ArtifactName: 'PowerShell Module'
-    publishLocation: 'Container'
 
 - task: PublishBuildArtifacts@1
   inputs:
