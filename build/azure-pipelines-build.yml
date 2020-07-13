@@ -58,6 +58,7 @@ steps:
     command: 'restore'
     restoreSolution: './packages.config'
     feedsToUse: 'select'
+    restoreDirectory: './packages'
 
 - task: PublishBuildArtifacts@1
   inputs:
