@@ -12,6 +12,13 @@ trigger:
     include:
     - src/*
 
+name: '$(Build.DefinitionName)_$(Date:yyyyMMdd)_$(Rev:.r)'
+
+variables:
+  version.MajorMinorPatch: '5.2.7' # Manually adjust the version number as needed for semantic versioning.
+  version.Revision: '$[counter(variables[''version.MajorMinorPatch''], 0)]' # Revision is auto-incremented.
+  versionNumber: '$(version.MajorMinorPatch).$(version.Revision)'
+
 pool:
   vmImage: 'ubuntu-latest'
 
@@ -31,6 +38,21 @@ steps:
     arguments: '-BaseDirectory ''./'''
     pwsh: true
 
+- task: ArchiveFiles@2
+  inputs:
+    rootFolderOrFile: './build/release/ADAL.PS/5.2.7.1'
+    includeRootFolder: false
+    archiveType: 'zip'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.Repository.Name)_FromScript.zip'
+    replaceExistingArchive: true
+
+- task: NuGetCommand@2
+  inputs:
+    command: 'restore'
+    restoreSolution: './packages.config'
+    feedsToUse: 'config'
+    nugetConfigPath: './NuGet.config'
+
 - task: CopyFiles@2
   inputs:
     SourceFolder: './src'
@@ -41,21 +63,21 @@ steps:
 
 - task: ArchiveFiles@2
   inputs:
-    rootFolderOrFile: './build/release/ADAL.PS/5.2.7.1'
-    includeRootFolder: false
+    rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/$(Build.Repository.Name)'
+    includeRootFolder: true
     archiveType: 'zip'
-    archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.Repository.Name)_$(versionNumber).zip'
     replaceExistingArchive: true
     verbose: true
 
 - task: PublishBuildArtifacts@1
   inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)/$(Build.Repository.Name)'
     ArtifactName: 'PowerShell Module'
     publishLocation: 'Container'
 
 - task: PublishBuildArtifacts@1
   inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)/$(Build.Repository.Name)_$(versionNumber).zip'
     ArtifactName: 'PowerShell Module Package'
     publishLocation: 'Container'
