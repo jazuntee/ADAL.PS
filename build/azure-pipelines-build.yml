@@ -31,6 +31,14 @@ steps:
     arguments: '-BaseDirectory ''./'''
     pwsh: true
 
+- task: CopyFiles@2
+  inputs:
+    SourceFolder: './src'
+    Contents: '**'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)/$(Build.Repository.Name)'
+    CleanTargetFolder: true
+    preserveTimestamp: true
+
 - task: ArchiveFiles@2
   inputs:
     rootFolderOrFile: './build/release/ADAL.PS/5.2.7.1'
@@ -39,4 +47,15 @@ steps:
     archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
     replaceExistingArchive: true
     verbose: true
-    
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'PowerShell Module'
+    publishLocation: 'Container'
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+    ArtifactName: 'PowerShell Module Package'
+    publishLocation: 'Container'
