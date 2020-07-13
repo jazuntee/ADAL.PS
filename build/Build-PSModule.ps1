@@ -71,8 +71,8 @@ $ModuleFileListFileInfo = Get-ChildItem $ModuleOutputDirectoryInfo.FullName -Rec
 $ModuleRequiredAssembliesFileInfo = $ModuleFileListFileInfo | Where-Object Extension -eq '.dll'
 $ModuleManifestOutputFileInfo = $ModuleFileListFileInfo | Where-Object Name -eq $ModuleManifestFileInfo.Name
 
-$ModuleFileList = Get-RelativePath $ModuleFileListFileInfo.FullName -BaseDirectory $ModuleOutputDirectoryInfo.FullName -ErrorAction Stop
-$ModuleRequiredAssemblies = Get-RelativePath $ModuleRequiredAssembliesFileInfo.FullName -BaseDirectory $ModuleOutputDirectoryInfo.FullName -ErrorAction Stop
+$ModuleFileList = Get-RelativePath $ModuleFileListFileInfo.FullName -WorkingDirectory $ModuleOutputDirectoryInfo.FullName -ErrorAction Stop
+$ModuleRequiredAssemblies = Get-RelativePath $ModuleRequiredAssembliesFileInfo.FullName -WorkingDirectory $ModuleOutputDirectoryInfo.FullName -ErrorAction Stop
 
 ## Clear RequiredAssemblies
 (Get-Content $ModuleManifestOutputFileInfo.FullName -Raw) -replace "(?s)RequiredAssemblies\ =\ @\([^)]*\)","# RequiredAssemblies = @()" | Set-Content $ModuleManifestOutputFileInfo.FullName
