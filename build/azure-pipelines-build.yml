@@ -1,81 +1,29 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
+# start.yaml
+parameters:
+- name: myStringName
+  type: string
+  default: a string value
+- name: myMultiString
+  type: string
+  default: default
+  values:
+  - default
+  - ubuntu
+- name: myNumber
+  type: number
+  default: 2
+  values:
+  - 1
+  - 2
+  - 4
+  - 8
+  - 16
+- name: myBoolean
+  type: boolean
+  default: true
 
-trigger:
-  batch: true
-  branches:
-    include:
-    - master
-  paths:
-    include:
-    - src/*
-
-#name: '$(Build.DefinitionName)_$(Date:yyyyMMdd)_$(Rev:.r)'
-
-variables:
-  version.MajorMinorPatch: '5.2.7' # Manually adjust the version number as needed for semantic versioning.
-  version.Revision: '$[counter(variables[''version.MajorMinorPatch''], 0)]' # Revision is auto-incremented.
-  versionNumber: '$(version.MajorMinorPatch).$(version.Revision)'
-
-pool:
-  vmImage: 'ubuntu-latest'
-
-steps:
-
-- task: NuGetCommand@2
-  inputs:
-    command: 'restore'
-    restoreSolution: './packages.config'
-    feedsToUse: 'config'
-    nugetConfigPath: './NuGet.config'
-    restoreDirectory: './build/packages'
-
-- task: PowerShell@2
-  inputs:
-    filePath: './build/Build-PSModule.ps1'
-    arguments: '-BaseDirectory ''./'''
-    pwsh: true
-
-- task: ArchiveFiles@2
-  inputs:
-    rootFolderOrFile: './build/release/ADAL.PS/5.2.7.1'
-    includeRootFolder: false
-    archiveType: 'zip'
-    archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.Repository.Name)_FromScript.zip'
-    replaceExistingArchive: true
-
-- task: CopyFiles@2
-  inputs:
-    SourceFolder: './src'
-    Contents: '**'
-    TargetFolder: '$(Build.ArtifactStagingDirectory)/$(Build.Repository.Name)'
-    preserveTimestamp: true
-
-- task: NuGetCommand@2
-  inputs:
-    command: 'restore'
-    restoreSolution: './packages.config'
-    feedsToUse: 'select'
-    restoreDirectory: './packages'
-
-- task: PublishBuildArtifacts@1
-  inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-    ArtifactName: 'PowerShell Module'
-    publishLocation: 'Container'
-
-- task: ArchiveFiles@2
-  inputs:
-    rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/$(Build.Repository.Name)'
-    includeRootFolder: true
-    archiveType: 'zip'
-    archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.Repository.Name)_$(versionNumber).zip'
-    replaceExistingArchive: true
-
-- task: PublishBuildArtifacts@1
-  inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)/$(Build.Repository.Name)_$(versionNumber).zip'
-    ArtifactName: 'PowerShell Module Package'
-    publishLocation: 'Container'
+steps: 
+- ${{ each parameter in parameters }}:
+  - script: echo ${{ parameter.Key }} 
+  - script: echo ${{ parameter.Value }}
+  
