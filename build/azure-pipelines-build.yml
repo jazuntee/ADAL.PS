@@ -77,7 +77,8 @@ steps:
     restoreDirectory: './packages'
 
 - ${{ each package in parameters.packages }}:
-  - script: echo ${{ package.id }} ${{ package.version }} ${{ package.targetFramework }}
+  - ${{ each targetFramework in package.targetFramework }}:
+    - script: echo ${{ package.id }} ${{ package.version }} ${{ targetFramework }}
   #- task: CopyFiles@2
   #  inputs:
   #    SourceFolder: './packages'
