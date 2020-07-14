@@ -118,12 +118,12 @@ steps:
     rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/${{ parameters[''moduleName''] }}'
     includeRootFolder: true
     archiveType: 'zip'
-    archiveFile: '$(Build.ArtifactStagingDirectory)/${{ parameters[''moduleName''] }}_${{ parameters[''moduleVersion''] }}.zip'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/${{ parameters[''moduleName''] }}_${{ variables[''moduleVersion''] }}.zip'
     replaceExistingArchive: true
 
 - task: PublishBuildArtifacts@1
   displayName: 'Publish PowerShell Module Package Artifact'
   inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)/${{ parameters[''moduleName''] }}_${{ parameters[''moduleVersion''] }}.zip'
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)/${{ parameters[''moduleName''] }}_${{ variables[''moduleVersion''] }}.zip'
     ArtifactName: 'PowerShell Module Package'
     publishLocation: 'Container'
