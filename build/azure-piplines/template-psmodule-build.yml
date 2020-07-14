@@ -60,7 +60,7 @@ steps:
   displayName: 'Update PowerShell Module Manifest'
   inputs:
     filePath: './build/Update-PSModuleManifest.ps1'
-    arguments: '-ModuleManifestPath "$(Build.ArtifactStagingDirectory)/${{ parameters.moduleName }}/${{ parameters.moduleName }}.psd1" -ModuleVersion "${{ variables.moduleVersion }}"'
+    arguments: '-ModuleManifestPath "$(Build.ArtifactStagingDirectory)/${{ parameters.moduleName }}/${{ parameters.moduleName }}.psd1" -ModuleVersion "${{ parameters.moduleVersion }}"'
     pwsh: true
 
 - task: PublishBuildArtifacts@1
