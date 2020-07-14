@@ -31,7 +31,7 @@ stages:
     - template: template-psmodule-build.yml
       parameters:
         moduleName: 'ADAL.PS'
-        moduleVersion: '$(moduleVersion)'
+        moduleVersion: '5.2.7.2'
         packages:
           id: Microsoft.IdentityModel.Clients.ActiveDirectory
           version: 5.2.7
