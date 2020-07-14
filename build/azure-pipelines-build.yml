@@ -68,7 +68,7 @@ steps:
 - task: CopyFiles@2
   inputs:
     Contents: 'LICENSE'
-    TargetFolder: '$(Build.ArtifactStagingDirectory)/$(moduleName)'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)/$(moduleName)/License.txt'
     preserveTimestamp: true
 
 - task: NuGetCommand@2
