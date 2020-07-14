@@ -13,9 +13,6 @@ parameters:
   - id: Microsoft.IdentityModel.Clients.ActiveDirectory
     version: 5.2.7
     targetFramework: [net45, netstandard1.3]
-  - id: Microsoft.IdentityModel.Clients.ActiveDirectory
-    version: 5.2.7
-    targetFramework: [uap10.0]
 
 trigger:
   batch: true
@@ -68,6 +65,12 @@ steps:
     TargetFolder: '$(Build.ArtifactStagingDirectory)/$(moduleName)'
     preserveTimestamp: true
 
+- task: CopyFiles@2
+  inputs:
+    Contents: 'LICENSE'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)/$(moduleName)'
+    preserveTimestamp: true
+
 - task: NuGetCommand@2
   inputs:
     command: 'restore'
@@ -78,7 +81,6 @@ steps:
 
 - ${{ each package in parameters.packages }}:
   - ${{ each targetFramework in package.targetFramework }}:
-    #- script: echo ${{ package.id }} ${{ package.version }} ${{ targetFramework }}
     - task: CopyFiles@2
       inputs:
         SourceFolder: './packages/${{ package.id }}.${{ package.version }}/lib/${{ targetFramework }}'
