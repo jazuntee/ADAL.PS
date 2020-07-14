@@ -17,25 +17,10 @@ parameters:
     version: 5.2.7
     targetFramework: [net45]
 
-trigger:
-  batch: true
-  branches:
-    include:
-    - master
-  paths:
-    include:
-    - src/*
-
-#name: '$(Build.DefinitionName)_$(Date:yyyyMMdd)_$(Rev:.r)'
-
 variables:
   moduleVersion.MajorMinorBuild: '${{parameters.moduleVersion}}' # Manually adjust the version number as needed for semantic versioning.
   moduleVersion.Revision: '$[counter(variables.moduleVersion.MajorMinorBuild, 1)]' # Revision is auto-incremented.
   moduleVersion: '$(moduleVersion.MajorMinorBuild).$(moduleVersion.Revision)'
-
-pool:
-#  vmImage: 'ubuntu-latest'
-  vmImage: 'windows-latest'
 
 steps:
 #- task: NuGetCommand@2
