@@ -34,7 +34,8 @@ variables:
   moduleVersion: '$(moduleVersion.MajorMinorBuild).$(moduleVersion.Revision)'
 
 pool:
-  vmImage: 'ubuntu-latest'
+#  vmImage: 'ubuntu-latest'
+  vmImage: 'windows-latest'
 
 steps:
 #- task: NuGetCommand@2
