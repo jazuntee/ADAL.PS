@@ -30,8 +30,8 @@ trigger:
 
 variables:
   moduleVersion.MajorMinorPatch: '${{ parameters[''moduleVersion''] }}' # Manually adjust the version number as needed for semantic versioning.
-  moduleVersion: '$(moduleVersion.MajorMinorPatch).$[counter(variables[''moduleVersion.MajorMinorPatch''], 1)]' # Revision is auto-incremented.
-  #versionNumber: '$(version.MajorMinorPatch).$(version.Revision)'
+  moduleVersion.Revision: '$[counter(variables[''moduleVersion.MajorMinorPatch''], 1)]' # Revision is auto-incremented.
+  moduleVersion: '$(moduleVersion.MajorMinorPatch).$(moduleVersion.Revision)'
   #moduleName: 'ADAL.PS'
   #stagingDirectory: '$(Build.ArtifactStagingDirectory)'
 
