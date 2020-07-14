@@ -67,6 +67,7 @@ steps:
     preserveTimestamp: true
 
 - task: CopyFiles@2
+  displayName: 'Copy LICENSE to Staging'
   inputs:
     Contents: 'LICENSE'
     TargetFolder: '$(Build.ArtifactStagingDirectory)/$(moduleName)'
@@ -74,13 +75,14 @@ steps:
 
 #- pwsh: 'Rename-Item ''$(Build.ArtifactStagingDirectory)/$(moduleName)/LICENSE'' -NewName ''License.txt'''
 
-- pwsh: 'Rename-Item ''$env:StagingDirectory/$env:ModuleName/LICENSE'' -NewName ''License.txt'''
-  displayName: 'Rename LICENSE File in Staging to License.txt'
+- pwsh: 'Rename-Item "$env:StagingDirectory/$env:ModuleName/LICENSE" -NewName "License.txt"'
+  displayName: 'Stage License.txt'
   env:
     StagingDirectory: $(Build.ArtifactStagingDirectory)
     ModuleName: $(moduleName)
 
 - task: NuGetCommand@2
+  displayName: 'Restore NuGet Packages'
   inputs:
     command: 'restore'
     restoreSolution: './packages.config'
@@ -91,6 +93,7 @@ steps:
 - ${{ each package in parameters.packages }}:
   - ${{ each targetFramework in package.targetFramework }}:
     - task: CopyFiles@2
+      displayName: 'Copy ${{ package.id }}.${{ package.version }} ${{ targetFramework }} to Staging'
       inputs:
         SourceFolder: './packages/${{ package.id }}.${{ package.version }}/lib/${{ targetFramework }}'
         Contents: '**'
@@ -98,12 +101,14 @@ steps:
         preserveTimestamp: true
 
 - task: PublishBuildArtifacts@1
+  displayName: 'Publish PowerShell Module Artifact'
   inputs:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)'
     ArtifactName: 'PowerShell Module'
     publishLocation: 'Container'
 
 - task: ArchiveFiles@2
+  displayName: 'Package PowerShell Module'
   inputs:
     rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/$(moduleName)'
     includeRootFolder: true
@@ -112,6 +117,7 @@ steps:
     replaceExistingArchive: true
 
 - task: PublishBuildArtifacts@1
+  displayName: 'Publish PowerShell Module Package Artifact'
   inputs:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)/$(moduleName)_$(versionNumber).zip'
     ArtifactName: 'PowerShell Module Package'
