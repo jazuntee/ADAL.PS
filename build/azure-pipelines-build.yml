@@ -63,7 +63,7 @@ steps:
   inputs:
     SourceFolder: './src'
     Contents: '**'
-    TargetFolder: '${{ Build.ArtifactStagingDirectory }}/$(moduleName)'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)/$(moduleName)'
     preserveTimestamp: true
 
 - task: CopyFiles@2
