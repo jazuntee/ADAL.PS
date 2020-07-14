@@ -1,6 +1,4 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
+# PowerShell Module Build Pipeline
 # https://aka.ms/yaml
 
 parameters:
@@ -23,28 +21,6 @@ variables:
   moduleVersion: '$(moduleVersion.MajorMinorBuild).$(moduleVersion.Revision)'
 
 steps:
-#- task: NuGetCommand@2
-#  inputs:
-#    command: 'restore'
-#    restoreSolution: './packages.config'
-#    feedsToUse: 'config'
-#    nugetConfigPath: './NuGet.config'
-#    restoreDirectory: './build/packages'
-
-#- task: PowerShell@2
-#  inputs:
-#    filePath: './build/Build-PSModule.ps1'
-#    arguments: '-BaseDirectory ''./'''
-#    pwsh: true
-
-#- task: ArchiveFiles@2
-#  inputs:
-#    rootFolderOrFile: './build/release/ADAL.PS/5.2.7.1'
-#    includeRootFolder: false
-#    archiveType: 'zip'
-#    archiveFile: '$(Build.ArtifactStagingDirectory)/$(moduleName)_FromScript.zip'
-#    replaceExistingArchive: true
-
 - task: CopyFiles@2
   displayName: 'Copy Source to Staging'
   inputs:

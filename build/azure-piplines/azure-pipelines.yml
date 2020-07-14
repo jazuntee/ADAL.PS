@@ -18,7 +18,7 @@ pool:
 
 steps:
 # 
-- template: azure-pipelines-build.yaml
+- template: template-psmodule-build.yaml
   parameters:
     moduleName: 'ADAL.PS'
     moduleVersion: '5.2.7'
