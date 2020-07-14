@@ -59,10 +59,11 @@ steps:
 #    replaceExistingArchive: true
 
 - task: CopyFiles@2
+  displayName: 'Copy Source to Staging'
   inputs:
     SourceFolder: './src'
     Contents: '**'
-    TargetFolder: '$(Build.ArtifactStagingDirectory)/$(moduleName)'
+    TargetFolder: '${{ Build.ArtifactStagingDirectory }}/$(moduleName)'
     preserveTimestamp: true
 
 - task: CopyFiles@2
@@ -71,11 +72,13 @@ steps:
     TargetFolder: '$(Build.ArtifactStagingDirectory)/$(moduleName)'
     preserveTimestamp: true
 
-- task: PowerShell@2
-  inputs:
-    targetType: 'inline'
-    script: 'Rename-Item ''$(Build.ArtifactStagingDirectory)/$(moduleName)/LICENSE'' -NewName ''License.txt'''
-    pwsh: true
+#- pwsh: 'Rename-Item ''$(Build.ArtifactStagingDirectory)/$(moduleName)/LICENSE'' -NewName ''License.txt'''
+
+- pwsh: 'Rename-Item ''$env:StagingDirectory/$env:ModuleName/LICENSE'' -NewName ''License.txt'''
+  displayName: 'Rename LICENSE File in Staging to License.txt'
+  env:
+    StagingDirectory: $(Build.ArtifactStagingDirectory)
+    ModuleName: $(moduleName)
 
 - task: NuGetCommand@2
   inputs:
