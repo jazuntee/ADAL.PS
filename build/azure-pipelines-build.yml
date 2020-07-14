@@ -1,29 +1,106 @@
-# start.yaml
-parameters:
-- name: myStringName
-  type: string
-  default: a string value
-- name: myMultiString
-  type: string
-  default: default
-  values:
-  - default
-  - ubuntu
-- name: myNumber
-  type: number
-  default: 2
-  values:
-  - 1
-  - 2
-  - 4
-  - 8
-  - 16
-- name: myBoolean
-  type: boolean
-  default: true
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
 
-steps: 
-- ${{ each parameter in parameters }}:
-  - script: echo ${{ parameter.Key }} 
-  - script: echo ${{ parameter.Value }}
-  
+parameters:
+- name: moduleName
+  type: string
+  default: ADAL.PS
+- name: packages
+  type: object
+  default:
+  - id: Microsoft.IdentityModel.Clients.ActiveDirectory
+    version: 5.2.7
+    targetFramework: [net45, netstandard1.3]
+  - id: Microsoft.IdentityModel.Clients.ActiveDirectory
+    version: 5.2.7
+    targetFramework: uap10.0
+
+trigger:
+  batch: true
+  branches:
+    include:
+    - master
+  paths:
+    include:
+    - src/*
+
+#name: '$(Build.DefinitionName)_$(Date:yyyyMMdd)_$(Rev:.r)'
+
+variables:
+  version.MajorMinorPatch: '5.2.7' # Manually adjust the version number as needed for semantic versioning.
+  version.Revision: '$[counter(variables[''version.MajorMinorPatch''], 1)]' # Revision is auto-incremented.
+  versionNumber: '$(version.MajorMinorPatch).$(version.Revision)'
+  moduleName: 'ADAL.PS'
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+
+steps:
+#- task: NuGetCommand@2
+#  inputs:
+#    command: 'restore'
+#    restoreSolution: './packages.config'
+#    feedsToUse: 'config'
+#    nugetConfigPath: './NuGet.config'
+#    restoreDirectory: './build/packages'
+
+#- task: PowerShell@2
+#  inputs:
+#    filePath: './build/Build-PSModule.ps1'
+#    arguments: '-BaseDirectory ''./'''
+#    pwsh: true
+
+#- task: ArchiveFiles@2
+#  inputs:
+#    rootFolderOrFile: './build/release/ADAL.PS/5.2.7.1'
+#    includeRootFolder: false
+#    archiveType: 'zip'
+#    archiveFile: '$(Build.ArtifactStagingDirectory)/$(moduleName)_FromScript.zip'
+#    replaceExistingArchive: true
+
+- task: CopyFiles@2
+  inputs:
+    SourceFolder: './src'
+    Contents: '**'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)/$(moduleName)'
+    preserveTimestamp: true
+
+- task: NuGetCommand@2
+  inputs:
+    command: 'restore'
+    restoreSolution: './packages.config'
+    feedsToUse: 'config'
+    nugetConfigPath: './NuGet.config'
+    restoreDirectory: './packages'
+
+- ${{ each package in parameters.packages }}:
+  - script: echo ${{ package.id }} ${{ package.version }} ${{ package.targetFramework }}
+  #- task: CopyFiles@2
+  #  inputs:
+  #    SourceFolder: './packages'
+  #    Contents: '${{ package.id }}.${{ package.version }}/lib/${{ package.targetFramework }}/*'
+  #    TargetFolder: '$(Build.ArtifactStagingDirectory)/$(moduleName)/$(packageId).$(packageVersion)/net45'
+  #    preserveTimestamp: true
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'PowerShell Module'
+    publishLocation: 'Container'
+
+- task: ArchiveFiles@2
+  inputs:
+    rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/$(moduleName)'
+    includeRootFolder: true
+    archiveType: 'zip'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/$(moduleName)_$(versionNumber).zip'
+    replaceExistingArchive: true
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)/$(moduleName)_$(versionNumber).zip'
+    ArtifactName: 'PowerShell Module Package'
+    publishLocation: 'Container'
