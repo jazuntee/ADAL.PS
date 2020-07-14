@@ -7,12 +7,15 @@ parameters:
 - name: moduleName
   type: string
   default: ADAL.PS
+- name: moduleVersion
+  type: string
+  default: 5.2.7
 - name: packages
   type: object
   default:
   - id: Microsoft.IdentityModel.Clients.ActiveDirectory
     version: 5.2.7
-    targetFramework: [net45, netstandard1.3]
+    targetFramework: [net45]
 
 trigger:
   batch: true
@@ -26,10 +29,11 @@ trigger:
 #name: '$(Build.DefinitionName)_$(Date:yyyyMMdd)_$(Rev:.r)'
 
 variables:
-  version.MajorMinorPatch: '5.2.7' # Manually adjust the version number as needed for semantic versioning.
-  version.Revision: '$[counter(variables[''version.MajorMinorPatch''], 1)]' # Revision is auto-incremented.
-  versionNumber: '$(version.MajorMinorPatch).$(version.Revision)'
-  moduleName: 'ADAL.PS'
+  #version.MajorMinorPatch: '5.2.7' # Manually adjust the version number as needed for semantic versioning.
+  moduleVersion: '${{ parameters[''moduleVersion''] }}.$[counter(parameters[''moduleVersion''], 1)]' # Revision is auto-incremented.
+  #versionNumber: '$(version.MajorMinorPatch).$(version.Revision)'
+  #moduleName: 'ADAL.PS'
+  #stagingDirectory: '$(Build.ArtifactStagingDirectory)'
 
 pool:
   vmImage: 'ubuntu-latest'
@@ -63,23 +67,24 @@ steps:
   inputs:
     SourceFolder: './src'
     Contents: '**'
-    TargetFolder: '$(Build.ArtifactStagingDirectory)/$(moduleName)'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)/${{ parameters[''moduleName''] }}'
     preserveTimestamp: true
 
 - task: CopyFiles@2
   displayName: 'Copy LICENSE to Staging'
   inputs:
     Contents: 'LICENSE'
-    TargetFolder: '$(Build.ArtifactStagingDirectory)/$(moduleName)'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)/${{ parameters[''moduleName''] }}'
     preserveTimestamp: true
 
 #- pwsh: 'Rename-Item ''$(Build.ArtifactStagingDirectory)/$(moduleName)/LICENSE'' -NewName ''License.txt'''
+#  displayName: 'Stage License.txt'
 
 - pwsh: 'Rename-Item "$env:StagingDirectory/$env:ModuleName/LICENSE" -NewName "License.txt"'
   displayName: 'Stage License.txt'
   env:
-    StagingDirectory: $(Build.ArtifactStagingDirectory)
-    ModuleName: $(moduleName)
+    StagingDirectory: '$(Build.ArtifactStagingDirectory)'
+    ModuleName: '${{ parameters[''moduleName''] }}'
 
 - task: NuGetCommand@2
   displayName: 'Restore NuGet Packages'
@@ -97,7 +102,7 @@ steps:
       inputs:
         SourceFolder: './packages/${{ package.id }}.${{ package.version }}/lib/${{ targetFramework }}'
         Contents: '**'
-        TargetFolder: '$(Build.ArtifactStagingDirectory)/$(moduleName)/${{ package.id }}.${{ package.version }}/${{ targetFramework }}'
+        TargetFolder: '$(Build.ArtifactStagingDirectory)/${{ parameters[''moduleName''] }}/${{ package.id }}.${{ package.version }}/${{ targetFramework }}'
         preserveTimestamp: true
 
 - task: PublishBuildArtifacts@1
@@ -110,15 +115,15 @@ steps:
 - task: ArchiveFiles@2
   displayName: 'Package PowerShell Module'
   inputs:
-    rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/$(moduleName)'
+    rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/${{ parameters[''moduleName''] }}'
     includeRootFolder: true
     archiveType: 'zip'
-    archiveFile: '$(Build.ArtifactStagingDirectory)/$(moduleName)_$(versionNumber).zip'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/${{ parameters[''moduleName''] }}_${{ parameters[''moduleVersion''] }}.zip'
     replaceExistingArchive: true
 
 - task: PublishBuildArtifacts@1
   displayName: 'Publish PowerShell Module Package Artifact'
   inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)/$(moduleName)_$(versionNumber).zip'
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)/${{ parameters[''moduleName''] }}_${{ parameters[''moduleVersion''] }}.zip'
     ArtifactName: 'PowerShell Module Package'
     publishLocation: 'Container'
