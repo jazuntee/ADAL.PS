@@ -29,9 +29,9 @@ trigger:
 #name: '$(Build.DefinitionName)_$(Date:yyyyMMdd)_$(Rev:.r)'
 
 variables:
-  moduleVersion.MajorMinorPatch: '${{parameters.moduleVersion}}' # Manually adjust the version number as needed for semantic versioning.
-  moduleVersion.Revision: '$[counter(variables.moduleVersion.MajorMinorPatch, 1)]' # Revision is auto-incremented.
-  moduleVersion: '$(moduleVersion.MajorMinorPatch).$(moduleVersion.Revision)'
+  moduleVersion.MajorMinorBuild: '${{parameters.moduleVersion}}' # Manually adjust the version number as needed for semantic versioning.
+  moduleVersion.Revision: '$[counter(variables.moduleVersion.MajorMinorBuild, 1)]' # Revision is auto-incremented.
+  moduleVersion: '$(moduleVersion.MajorMinorBuild).$(moduleVersion.Revision)'
 
 pool:
   vmImage: 'ubuntu-latest'
@@ -98,6 +98,11 @@ steps:
         Contents: '**'
         TargetFolder: '$(Build.ArtifactStagingDirectory)/${{ parameters.moduleName }}/${{ package.id }}.${{ package.version }}/${{ targetFramework }}'
         preserveTimestamp: true
+
+- task: PowerShell@2
+  inputs:
+    filePath: './build/Update-PSModuleManifest.ps1'
+    arguments: '-ModuleManifestPath "$(Build.ArtifactStagingDirectory)/${{ parameters.moduleName }}/${{ parameters.moduleName }}.psd1" -ModuleVersion "${{ variables.moduleVersion }}"'
 
 - task: PublishBuildArtifacts@1
   displayName: 'Publish PowerShell Module Artifact'
