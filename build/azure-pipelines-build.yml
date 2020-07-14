@@ -15,7 +15,7 @@ parameters:
     targetFramework: [net45, netstandard1.3]
   - id: Microsoft.IdentityModel.Clients.ActiveDirectory
     version: 5.2.7
-    targetFramework: uap10.0
+    targetFramework: [uap10.0]
 
 trigger:
   batch: true
@@ -78,13 +78,13 @@ steps:
 
 - ${{ each package in parameters.packages }}:
   - ${{ each targetFramework in package.targetFramework }}:
-    - script: echo ${{ package.id }} ${{ package.version }} ${{ targetFramework }}
-  #- task: CopyFiles@2
-  #  inputs:
-  #    SourceFolder: './packages'
-  #    Contents: '${{ package.id }}.${{ package.version }}/lib/${{ package.targetFramework }}/*'
-  #    TargetFolder: '$(Build.ArtifactStagingDirectory)/$(moduleName)/$(packageId).$(packageVersion)/net45'
-  #    preserveTimestamp: true
+    #- script: echo ${{ package.id }} ${{ package.version }} ${{ targetFramework }}
+    - task: CopyFiles@2
+      inputs:
+        SourceFolder: './packages/${{ package.id }}.${{ package.version }}/lib/${{ targetFramework }}'
+        Contents: '**'
+        TargetFolder: '$(Build.ArtifactStagingDirectory)/$(moduleName)/${{ package.id }}.${{ package.version }}/${{ targetFramework }}'
+        preserveTimestamp: true
 
 - task: PublishBuildArtifacts@1
   inputs:
