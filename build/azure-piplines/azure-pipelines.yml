@@ -1,0 +1,28 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+  batch: true
+  branches:
+    include:
+    - master
+  paths:
+    include:
+    - src/*
+
+pool:
+#  vmImage: 'ubuntu-latest'
+  vmImage: 'windows-latest'
+
+steps:
+# 
+- template: azure-pipelines-build.yaml
+  parameters:
+    moduleName: 'ADAL.PS'
+    moduleVersion: '5.2.7'
+    packages: 
+      id: Microsoft.IdentityModel.Clients.ActiveDirectory
+      version: 5.2.7
+      targetFramework: [net45]
