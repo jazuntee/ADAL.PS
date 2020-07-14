@@ -100,9 +100,11 @@ steps:
         preserveTimestamp: true
 
 - task: PowerShell@2
+  displayName: 'Update PowerShell Module Manifest'
   inputs:
     filePath: './build/Update-PSModuleManifest.ps1'
     arguments: '-ModuleManifestPath "$(Build.ArtifactStagingDirectory)/${{ parameters.moduleName }}/${{ parameters.moduleName }}.psd1" -ModuleVersion "${{ variables.moduleVersion }}"'
+    pwsh: true
 
 - task: PublishBuildArtifacts@1
   displayName: 'Publish PowerShell Module Artifact'
