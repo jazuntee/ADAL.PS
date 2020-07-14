@@ -12,17 +12,27 @@ trigger:
     include:
     - src/*
 
+pr: none
+
+variables:
+  moduleVersion.MajorMinorBuild: '5.2.7' # Manually adjust the version number as needed for semantic versioning.
+  moduleVersion.Revision: '$[counter(variables.moduleVersion.MajorMinorBuild, 1)]' # Revision is auto-incremented.
+  moduleVersion: '$(moduleVersion.MajorMinorBuild).$(moduleVersion.Revision)'
+
 pool:
 #  vmImage: 'ubuntu-latest'
   vmImage: 'windows-latest'
 
-steps:
-# 
-- template: template-psmodule-build.yml
-#  parameters:
-#    moduleName: 'ADAL.PS'
-#    moduleVersion: '5.2.7'
-#    packages: 
-#      id: Microsoft.IdentityModel.Clients.ActiveDirectory
-#      version: 5.2.7
-#      targetFramework: [net45]
+stages:
+- stage: build
+  jobs: 
+  - job: buildJob
+    steps:
+    - template: template-psmodule-build.yml
+      parameters:
+        moduleName: 'ADAL.PS'
+        moduleVersion: '$(moduleVersion)'
+        packages:
+          id: Microsoft.IdentityModel.Clients.ActiveDirectory
+          version: 5.2.7
+          targetFramework: [net45]
