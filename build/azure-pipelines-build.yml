@@ -68,8 +68,14 @@ steps:
 - task: CopyFiles@2
   inputs:
     Contents: 'LICENSE'
-    TargetFolder: '$(Build.ArtifactStagingDirectory)/$(moduleName)/License.txt'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)/$(moduleName)'
     preserveTimestamp: true
+
+- task: PowerShell@2
+  inputs:
+    targetType: 'inline'
+    script: 'Rename-Item ''$(Build.ArtifactStagingDirectory)/$(moduleName)/LICENSE'' -NewName ''License.txt'''
+    pwsh: true
 
 - task: NuGetCommand@2
   inputs:
