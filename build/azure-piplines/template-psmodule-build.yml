@@ -4,21 +4,16 @@
 parameters:
 - name: moduleName
   type: string
-  default: ADAL.PS
+  default:
 - name: moduleVersion
   type: string
-  default: 5.2.7
+  default:
 - name: packages
   type: object
   default:
   - id: Microsoft.IdentityModel.Clients.ActiveDirectory
     version: 5.2.7
     targetFramework: [net45]
-
-variables:
-  moduleVersion.MajorMinorBuild: '${{parameters.moduleVersion}}' # Manually adjust the version number as needed for semantic versioning.
-  moduleVersion.Revision: '$[counter(variables.moduleVersion.MajorMinorBuild, 1)]' # Revision is auto-incremented.
-  moduleVersion: '$(moduleVersion.MajorMinorBuild).$(moduleVersion.Revision)'
 
 steps:
 - task: CopyFiles@2
