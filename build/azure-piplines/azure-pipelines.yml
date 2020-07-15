@@ -3,6 +3,15 @@
 # Add steps that build, run tests, deploy, and more:
 # https://aka.ms/yaml
 
+parameters:
+- name: vmImage
+  type: string
+  default: windows-latest
+  values:
+  - windows-latest
+  - ubuntu-latest
+  - macOS-latest
+
 trigger:
   batch: true
   branches:
@@ -20,19 +29,27 @@ variables:
   moduleVersion: '$(moduleVersion.MajorMinorBuild).$(moduleVersion.Revision)'
 
 pool:
-#  vmImage: 'ubuntu-latest'
-  vmImage: 'windows-latest'
+  vmImage: '${{ parameters.vmImage }}'
 
-#stages:
-#- stage: build
-#  jobs: 
-#  - job: buildJob
-steps:
-- template: template-psmodule-build.yml
-  parameters:
-    moduleName: 'ADAL.PS'
-    moduleVersion: '5.2.7.2'
-    packages:
-    - id: Microsoft.IdentityModel.Clients.ActiveDirectory
-      version: 5.2.7
-      targetFramework: [net45]
+stages:
+- stage: Build
+  jobs: 
+  - job: BuildProcess
+    steps:
+    - template: template-psmodule-build.yml
+      parameters:
+        moduleName: 'ADAL.PS'
+        moduleVersion: '$(moduleVersion)'
+        packages:
+        - id: Microsoft.IdentityModel.Clients.ActiveDirectory
+          version: 5.2.7
+          targetFramework: [net45]
+
+- stage: Package
+  jobs: 
+  - job: PackageProcess
+    steps:
+    - template: template-psmodule-package.yml
+      parameters:
+        moduleName: 'ADAL.PS'
+        moduleVersion: '$(moduleVersion)'
