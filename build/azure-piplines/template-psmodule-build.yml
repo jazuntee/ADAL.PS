@@ -1,4 +1,4 @@
-# PowerShell Module Build Pipeline
+# PowerShell Module Build Pipeline Template
 # https://aka.ms/yaml
 
 parameters:

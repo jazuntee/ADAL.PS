@@ -1,0 +1,27 @@
+# PowerShell Module Package Pipeline Template
+# https://aka.ms/yaml
+
+parameters:
+- name: moduleName
+  type: string
+  default:
+- name: moduleVersion
+  type: string
+  default:
+
+steps:
+- task: ArchiveFiles@2
+  displayName: 'Package PowerShell Module'
+  inputs:
+    rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/${{ parameters.moduleName }}'
+    includeRootFolder: true
+    archiveType: 'zip'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/${{ parameters.moduleName }}_${{ parameters.moduleVersion }}.zip'
+    replaceExistingArchive: true
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish PowerShell Module Package Artifact'
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)/${{ parameters.moduleName }}_${{ parameters.moduleVersion }}.zip'
+    ArtifactName: 'PowerShell Module Package'
+    publishLocation: 'Container'
