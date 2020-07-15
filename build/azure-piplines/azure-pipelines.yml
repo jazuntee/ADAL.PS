@@ -47,8 +47,8 @@ stages:
           version: 5.2.7
           targetFramework: [net45]
 
-- stage: Package
-  jobs: 
+#- stage: Package
+#  jobs: 
   - job: PackageProcess
     steps:
     - template: template-psmodule-package.yml
