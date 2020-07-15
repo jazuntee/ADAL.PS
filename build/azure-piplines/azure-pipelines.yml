@@ -32,7 +32,7 @@ steps:
   parameters:
     moduleName: 'ADAL.PS'
     moduleVersion: '5.2.7.2'
-#    packages:
-#      id: Microsoft.IdentityModel.Clients.ActiveDirectory
-#      version: 5.2.7
-#      targetFramework: [net45]
+    packages:
+    - id: Microsoft.IdentityModel.Clients.ActiveDirectory
+      version: 5.2.7
+      targetFramework: [net45]
