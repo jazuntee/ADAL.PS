@@ -50,6 +50,7 @@ stages:
 #- stage: Package
 #  jobs: 
   - job: PackageProcess
+    dependsOn: BuildProcess
     steps:
     - template: template-psmodule-package.yml
       parameters:
