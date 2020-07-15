@@ -10,6 +10,8 @@ param
 
 ## Initialize
 Import-Module "$PSScriptRoot\CommonFunctions.psm1" -Force -ErrorAction Stop
+[hashtable] $paramUpdateModuleManifest = @{}
+if ($ModuleVersion) { $paramUpdateModuleManifest['ModuleVersion'] = $ModuleVersion }
 
 [System.IO.FileInfo] $ModuleManifestFileInfo = Get-PathInfo $ModuleManifestPath -DefaultFilename "*.psd1" -ErrorAction Stop
 
@@ -23,10 +25,15 @@ $ModuleRequiredAssembliesFileInfo = $ModuleFileListFileInfo | Where-Object Exten
 
 ## Get Paths Relative to Module Base Directory
 $ModuleFileList = Get-RelativePath $ModuleFileListFileInfo.FullName -WorkingDirectory $ModuleOutputDirectoryInfo.FullName -ErrorAction Stop
-$ModuleRequiredAssemblies = Get-RelativePath $ModuleRequiredAssembliesFileInfo.FullName -WorkingDirectory $ModuleOutputDirectoryInfo.FullName -ErrorAction Stop
+$paramUpdateModuleManifest['FileList'] = $ModuleFileList
+
+if ($ModuleRequiredAssembliesFileInfo) {
+    $ModuleRequiredAssemblies = Get-RelativePath $ModuleRequiredAssembliesFileInfo.FullName -WorkingDirectory $ModuleOutputDirectoryInfo.FullName -ErrorAction Stop
+    $paramUpdateModuleManifest['RequiredAssemblies'] = $ModuleRequiredAssemblies
+}
 
 ## Clear RequiredAssemblies
 (Get-Content $ModuleManifestFileInfo.FullName -Raw) -replace "(?s)RequiredAssemblies\ =\ @\([^)]*\)", "# RequiredAssemblies = @()" | Set-Content $ModuleManifestFileInfo.FullName
 
 ## Update Module Manifest in Module Output Directory
-Update-ModuleManifest -Path $ModuleManifestFileInfo.FullName -ModuleVersion $ModuleVersion -RequiredAssemblies $ModuleRequiredAssemblies -FileList $ModuleFileList -ErrorAction Stop
+Update-ModuleManifest -Path $ModuleManifestFileInfo.FullName -ErrorAction Stop @paramUpdateModuleManifest
