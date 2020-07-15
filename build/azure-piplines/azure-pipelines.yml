@@ -23,16 +23,16 @@ pool:
 #  vmImage: 'ubuntu-latest'
   vmImage: 'windows-latest'
 
-stages:
-- stage: build
-  jobs: 
-  - job: buildJob
-    steps:
-    - template: template-psmodule-build.yml
-      parameters:
-        moduleName: 'ADAL.PS'
-        moduleVersion: '5.2.7.2'
-        packages:
-          id: Microsoft.IdentityModel.Clients.ActiveDirectory
-          version: 5.2.7
-          targetFramework: [net45]
+#stages:
+#- stage: build
+#  jobs: 
+#  - job: buildJob
+steps:
+- template: template-psmodule-build.yml
+  parameters:
+    moduleName: 'ADAL.PS'
+    moduleVersion: '5.2.7.2'
+    packages:
+    - id: Microsoft.IdentityModel.Clients.ActiveDirectory
+      version: 5.2.7
+      targetFramework: [net45]
