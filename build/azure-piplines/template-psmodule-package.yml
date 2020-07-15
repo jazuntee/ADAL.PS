@@ -10,6 +10,13 @@ parameters:
   default:
 
 steps:
+- task: DownloadBuildArtifacts@0
+  inputs:
+    buildType: 'current'
+    downloadType: 'single'
+    artifactName: 'PowerShell Module'
+    downloadPath: '$(System.ArtifactsDirectory)'
+
 - task: ArchiveFiles@2
   displayName: 'Package PowerShell Module'
   inputs:
