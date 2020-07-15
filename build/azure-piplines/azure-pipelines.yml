@@ -5,6 +5,7 @@
 
 parameters:
 - name: vmImage
+  displayName: 'Pool Image'
   type: string
   default: windows-latest
   values:
