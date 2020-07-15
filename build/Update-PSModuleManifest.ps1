@@ -5,7 +5,7 @@ param
     [string] $ModuleManifestPath,
     # Module Version
     [parameter(Mandatory = $false)]
-    [version] $ModuleVersion
+    [string] $ModuleVersion
 )
 
 ## Initialize
