@@ -4,21 +4,16 @@
 parameters:
 - name: moduleName
   type: string
-  default: ADAL.PS
+  default:
 - name: moduleVersion
   type: string
-  default: 5.2.7
+  default:
 - name: packages
   type: object
   default:
   - id: Microsoft.IdentityModel.Clients.ActiveDirectory
     version: 5.2.7
     targetFramework: [net45]
-
-variables:
-  moduleVersion.MajorMinorBuild: '${{parameters.moduleVersion}}' # Manually adjust the version number as needed for semantic versioning.
-  moduleVersion.Revision: '$[counter(variables.moduleVersion.MajorMinorBuild, 1)]' # Revision is auto-incremented.
-  moduleVersion: '$(moduleVersion.MajorMinorBuild).$(moduleVersion.Revision)'
 
 steps:
 - task: CopyFiles@2
@@ -65,7 +60,7 @@ steps:
   displayName: 'Update PowerShell Module Manifest'
   inputs:
     filePath: './build/Update-PSModuleManifest.ps1'
-    arguments: '-ModuleManifestPath "$(Build.ArtifactStagingDirectory)/${{ parameters.moduleName }}/${{ parameters.moduleName }}.psd1" -ModuleVersion "${{ variables.moduleVersion }}"'
+    arguments: '-ModuleManifestPath "$(Build.ArtifactStagingDirectory)/${{ parameters.moduleName }}/${{ parameters.moduleName }}.psd1" -ModuleVersion "${{ parameters.moduleVersion }}"'
     pwsh: true
 
 - task: PublishBuildArtifacts@1
@@ -81,12 +76,12 @@ steps:
     rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/${{ parameters.moduleName }}'
     includeRootFolder: true
     archiveType: 'zip'
-    archiveFile: '$(Build.ArtifactStagingDirectory)/${{ parameters.moduleName }}_${{ variables.moduleVersion }}.zip'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/${{ parameters.moduleName }}_${{ parameters.moduleVersion }}.zip'
     replaceExistingArchive: true
 
 - task: PublishBuildArtifacts@1
   displayName: 'Publish PowerShell Module Package Artifact'
   inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)/${{ parameters.moduleName }}_${{ variables.moduleVersion }}.zip'
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)/${{ parameters.moduleName }}_${{ parameters.moduleVersion }}.zip'
     ArtifactName: 'PowerShell Module Package'
     publishLocation: 'Container'
