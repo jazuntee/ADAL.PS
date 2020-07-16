@@ -49,10 +49,21 @@ stages:
 
 #- stage: Package
 #  jobs: 
-  - job: PackageProcess
+#  - job: PackageProcess
+#    dependsOn: BuildProcess
+#    steps:
+#    - template: template-psmodule-package.yml
+#      parameters:
+#        moduleName: 'ADAL.PS'
+#        moduleVersion: '$(moduleVersion)'
+
+  - deployment: PackageProcess
     dependsOn: BuildProcess
-    steps:
-    - template: template-psmodule-package.yml
-      parameters:
-        moduleName: 'ADAL.PS'
-        moduleVersion: '$(moduleVersion)'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - template: template-psmodule-package.yml
+            parameters:
+              moduleName: 'ADAL.PS'
+              moduleVersion: '$(moduleVersion)'
