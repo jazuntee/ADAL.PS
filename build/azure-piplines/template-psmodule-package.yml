@@ -16,12 +16,12 @@ parameters:
   default: 'PowerShell Module Package'
 
 steps:
-- task: DownloadBuildArtifacts@0
-  inputs:
-    buildType: 'current'
-    downloadType: 'single'
-    artifactName: '${{ parameters.artifactNameSource }}'
-    downloadPath: '$(System.ArtifactsDirectory)'
+#- task: DownloadBuildArtifacts@0
+#  inputs:
+#    buildType: 'current'
+#    downloadType: 'single'
+#    artifactName: '${{ parameters.artifactNameSource }}'
+#    downloadPath: '$(System.ArtifactsDirectory)'
 
 - task: ArchiveFiles@2
   displayName: 'Package PowerShell Module'
