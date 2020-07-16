@@ -59,6 +59,7 @@ stages:
 
   - deployment: PackageProcess
     dependsOn: BuildProcess
+    environment: Production
     strategy:
       runOnce:
         deploy:
