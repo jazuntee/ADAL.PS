@@ -47,11 +47,24 @@ stages:
           version: 5.2.7
           targetFramework: [net45]
 
-- stage: Package
-  jobs: 
-  - job: PackageProcess
-    steps:
-    - template: template-psmodule-package.yml
-      parameters:
-        moduleName: 'ADAL.PS'
-        moduleVersion: '$(moduleVersion)'
+#- stage: Package
+#  jobs: 
+#  - job: PackageProcess
+#    dependsOn: BuildProcess
+#    steps:
+#    - template: template-psmodule-package.yml
+#      parameters:
+#        moduleName: 'ADAL.PS'
+#        moduleVersion: '$(moduleVersion)'
+
+  - deployment: PackageProcess
+    dependsOn: BuildProcess
+    environment: Production
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - template: template-psmodule-package.yml
+            parameters:
+              moduleName: 'ADAL.PS'
+              moduleVersion: '$(moduleVersion)'
