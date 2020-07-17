@@ -44,14 +44,14 @@ stages:
         - id: Microsoft.IdentityModel.Clients.ActiveDirectory
           version: 5.2.7
           targetFramework: [net45]
-  - job: SignProcess
-    dependsOn: BuildProcess
-    pool:
-      vmImage: 'windows-latest'
-    steps:
-    - template: template-psmodule-sign.yml
-      parameters:
-        moduleName: 'ADAL.PS'
+#  - job: SignProcess
+#    dependsOn: BuildProcess
+#    pool:
+#      vmImage: 'windows-latest'
+#    steps:
+#    - template: template-psmodule-sign.yml
+#      parameters:
+#        moduleName: 'ADAL.PS'
 
 - stage: Package
   dependsOn: Build
