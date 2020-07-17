@@ -53,39 +53,3 @@ stages:
 #      parameters:
 #        moduleName: 'ADAL.PS'
 
-- stage: Package
-  dependsOn: Build
-  jobs: 
-  - deployment: SignProcess
-    environment: Standalone
-    pool:
-      vmImage: 'windows-latest'
-    strategy:
-      runOnce:
-        deploy:
-          steps:
-          - template: template-psmodule-sign.yml
-            parameters:
-              moduleName: 'ADAL.PS'
-
-#- stage: Package
-#  jobs: 
-#  - job: PackageProcess
-#    dependsOn: BuildProcess
-#    steps:
-#    - template: template-psmodule-package.yml
-#      parameters:
-#        moduleName: 'ADAL.PS'
-#        moduleVersion: '$(moduleVersion)'
-
-  - deployment: PackageProcess
-    dependsOn: SignProcess
-    environment: Standalone
-    strategy:
-      runOnce:
-        deploy:
-          steps:
-          - template: template-psmodule-package.yml
-            parameters:
-              moduleName: 'ADAL.PS'
-              moduleVersion: '$(moduleVersion)'
