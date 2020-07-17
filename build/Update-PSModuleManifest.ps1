@@ -9,7 +9,7 @@ param
 )
 
 ## Initialize
-Import-Module "$PSScriptRoot\CommonFunctions.psm1" -Force -ErrorAction Stop
+Import-Module "$PSScriptRoot\CommonFunctions.psm1" -Force -WarningAction SilentlyContinue -ErrorAction Stop
 [hashtable] $paramUpdateModuleManifest = @{}
 if ($ModuleVersion) { $paramUpdateModuleManifest['ModuleVersion'] = $ModuleVersion }
 
