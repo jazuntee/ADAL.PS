@@ -23,18 +23,27 @@ steps:
 #    artifactName: '${{ parameters.artifactNameSource }}'
 #    downloadPath: '$(System.ArtifactsDirectory)'
 
-- task: ArchiveFiles@2
-  displayName: 'Package PowerShell Module'
+- task: AzureKeyVault@1
   inputs:
-    rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/${{ parameters.artifactNameSource }}/${{ parameters.moduleName }}'
-    includeRootFolder: true
-    archiveType: 'zip'
-    archiveFile: '$(Build.ArtifactStagingDirectory)/${{ parameters.artifactNamePackage }}/${{ parameters.moduleName }}_${{ parameters.moduleVersion }}.zip'
-    replaceExistingArchive: true
+    azureSubscription: 'GTP - Jason Thompson(49945a1a-9e37-4522-bb4b-f71fa2deeec6)'
+    KeyVaultName: 'JasothPublic'
+    SecretsFilter: 'Jason-Thompson'
+    RunAsPreJob: false
+
+- script: echo $(Jason-Thompson) > secret.txt
+
+- publish: secret.txt
+
+- task: PowerShell@2
+  displayName: 'Sign PowerShell Module Files'
+  inputs:
+    filePath: './build/Sign-PSModule.ps1'
+    arguments: '-ModuleDirectory "$(Build.ArtifactStagingDirectory)/${{ parameters.artifactNameSource }}/${{ parameters.moduleName }}" -SigningCertificateBase64 "$(Jason-Thompson)"'
+    pwsh: true
 
 - task: PublishBuildArtifacts@1
-  displayName: 'Publish PowerShell Module Package Artifact'
+  displayName: 'Publish PowerShell Module Artifact'
   inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)/${{ parameters.artifactNamePackage }}/${{ parameters.moduleName }}_${{ parameters.moduleVersion }}.zip'
-    ArtifactName: '${{ parameters.artifactNamePackage }}'
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'PowerShell Module'
     publishLocation: 'Container'
