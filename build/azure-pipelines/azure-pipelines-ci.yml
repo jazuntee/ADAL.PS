@@ -52,6 +52,8 @@ stages:
   dependsOn: Build
   jobs: 
   - deployment: SignProcess
+    pool:
+      vmImage: 'windows-latest'
     environment: Standalone
     strategy:
       runOnce:
