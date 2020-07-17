@@ -45,6 +45,9 @@ stages:
           version: 5.2.7
           targetFramework: [net45]
 
+- stage: Package
+  dependsOn: Build
+  jobs: 
   - deployment: SignProcess
     dependsOn: BuildProcess
     environment: Production
