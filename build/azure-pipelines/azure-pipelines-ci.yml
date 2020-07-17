@@ -44,12 +44,15 @@ stages:
         - id: Microsoft.IdentityModel.Clients.ActiveDirectory
           version: 5.2.7
           targetFramework: [net45]
+    - template: template-psmodule-sign.yml
+      parameters:
+        moduleName: 'ADAL.PS'
 
 - stage: Package
   dependsOn: Build
   jobs: 
   - deployment: SignProcess
-    environment: Production
+    environment: Standalone
     strategy:
       runOnce:
         deploy:
@@ -70,7 +73,7 @@ stages:
 
   - deployment: PackageProcess
     dependsOn: SignProcess
-    environment: Production
+    environment: Standalone
     strategy:
       runOnce:
         deploy:
