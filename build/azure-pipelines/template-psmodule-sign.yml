@@ -38,5 +38,5 @@ steps:
   displayName: 'Publish PowerShell Module Artifact'
   inputs:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)/${{ parameters.artifactNameSource }}'
-    ArtifactName: '$(Build.ArtifactStagingDirectory)/${{ parameters.artifactNameSource }}'
+    ArtifactName: '$(Build.ArtifactStagingDirectory)/test'
     publishLocation: 'Container'
