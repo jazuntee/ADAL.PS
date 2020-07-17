@@ -49,7 +49,6 @@ stages:
   dependsOn: Build
   jobs: 
   - deployment: SignProcess
-    dependsOn: BuildProcess
     environment: Production
     strategy:
       runOnce:
