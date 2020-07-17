@@ -55,7 +55,6 @@ stages:
           - template: template-psmodule-sign.yml
             parameters:
               moduleName: 'ADAL.PS'
-              moduleVersion: '$(moduleVersion)'
 
 #- stage: Package
 #  jobs: 
