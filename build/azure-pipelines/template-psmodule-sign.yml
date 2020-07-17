@@ -10,7 +10,7 @@ parameters:
   default: 'PowerShell Module'
 
 steps:
-#- download: none
+- download: none
 - checkout: self
 
 - task: DownloadBuildArtifacts@0
@@ -18,15 +18,7 @@ steps:
     buildType: 'current'
     downloadType: 'single'
     artifactName: '${{ parameters.artifactNameSource }}'
-    downloadPath: '$(Pipeline.Workspace)'
-
-- task: CopyFiles@2
-  displayName: 'Copy Source to Staging'
-  inputs:
-    SourceFolder: '$(Pipeline.Workspace)/${{ parameters.artifactNameSource }}'
-    Contents: '**'
-    TargetFolder: '$(Build.ArtifactStagingDirectory)/${{ parameters.artifactNameSource }}'
-    preserveTimestamp: true
+    downloadPath: '$(Build.ArtifactStagingDirectory)'
 
 - task: AzureKeyVault@1
   inputs:
@@ -39,12 +31,12 @@ steps:
   displayName: 'Sign PowerShell Module Files'
   inputs:
     filePath: './build/Sign-PSModule.ps1'
-    arguments: '-ModuleDirectory "$(Pipeline.Workspace)/${{ parameters.artifactNameSource }}/${{ parameters.moduleName }}" -SigningCertificate "$(Jason-Thompson)"'
+    arguments: '-ModuleDirectory "$(Build.ArtifactStagingDirectory)/${{ parameters.artifactNameSource }}/${{ parameters.moduleName }}" -SigningCertificate "$(Jason-Thompson)"'
     pwsh: true
 
 - task: PublishBuildArtifacts@1
   displayName: 'Publish PowerShell Module Artifact'
   inputs:
-    PathtoPublish: '$(Pipeline.Workspace)/${{ parameters.artifactNameSource }}'
-    ArtifactName: '$(Pipeline.Workspace)/${{ parameters.artifactNameSource }}'
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)/${{ parameters.artifactNameSource }}'
+    ArtifactName: '$(Build.ArtifactStagingDirectory)/${{ parameters.artifactNameSource }}'
     publishLocation: 'Container'
