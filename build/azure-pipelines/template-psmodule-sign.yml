@@ -10,15 +10,23 @@ parameters:
   default: 'PowerShell Module'
 
 steps:
-- download: none
+#- download: none
 - checkout: self
 
-- task: DownloadBuildArtifacts@0
+#- task: DownloadBuildArtifacts@0
+#  inputs:
+#    buildType: 'current'
+#    downloadType: 'single'
+#    artifactName: '${{ parameters.artifactNameSource }}'
+#    downloadPath: '$(Build.ArtifactStagingDirectory)'
+
+- task: CopyFiles@2
   inputs:
-    buildType: 'current'
-    downloadType: 'single'
-    artifactName: '${{ parameters.artifactNameSource }}'
-    downloadPath: '$(Build.ArtifactStagingDirectory)'
+    SourceFolder: '$(Pipeline.Workspace)/${{ parameters.artifactNameSource }}'
+    Contents: '**'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)/${{ parameters.artifactNameSource }}'
+    CleanTargetFolder: true
+    preserveTimestamp: true
 
 - task: AzureKeyVault@1
   inputs:
