@@ -45,8 +45,10 @@ stages:
           version: 5.2.7
           targetFramework: [net45]
 
+- stage: Package
+  dependsOn: Build
+  jobs: 
   - deployment: SignProcess
-    dependsOn: BuildProcess
     environment: Production
     strategy:
       runOnce:
@@ -55,7 +57,6 @@ stages:
           - template: template-psmodule-sign.yml
             parameters:
               moduleName: 'ADAL.PS'
-              moduleVersion: '$(moduleVersion)'
 
 #- stage: Package
 #  jobs: 
@@ -68,7 +69,7 @@ stages:
 #        moduleVersion: '$(moduleVersion)'
 
   - deployment: PackageProcess
-    dependsOn: BuildProcess
+    dependsOn: SignProcess
     environment: Production
     strategy:
       runOnce:
