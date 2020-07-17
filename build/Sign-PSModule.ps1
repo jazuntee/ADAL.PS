@@ -14,11 +14,12 @@ param
     [string] $TimestampServer = 'http://timestamp.digicert.com'
 )
 
+## Convert Certificate from Base64 Byte Array
 $kvSecretBytes = [System.Convert]::FromBase64String($SigningCertificateBase64)
 $certCollection = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2Collection
 $certCollection.Import($kvSecretBytes, $null, [System.Security.Cryptography.X509Certificates.X509KeyStorageFlags]::Exportable)
 
-$SigningCertificate = $certCollection
+$SigningCertificate = $certCollection | Select-Object -Last 1
 
 ## Sign PowerShell Files
 Set-AuthenticodeSignature (Join-Path $ModuleDirectory '*.ps*1*') -Certificate $SigningCertificate -HashAlgorithm SHA256 -IncludeChain NotRoot -TimestampServer $TimestampServer
