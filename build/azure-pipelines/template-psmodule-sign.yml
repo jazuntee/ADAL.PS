@@ -10,6 +10,8 @@ parameters:
   default: 'PowerShell Module'
 
 steps:
+- checkout: self
+
 #- task: DownloadBuildArtifacts@0
 #  inputs:
 #    buildType: 'current'
