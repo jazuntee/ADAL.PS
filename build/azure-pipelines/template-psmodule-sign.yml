@@ -28,7 +28,7 @@ steps:
   displayName: 'Sign PowerShell Module Files'
   inputs:
     filePath: './build/Sign-PSModule.ps1'
-    arguments: '-ModuleDirectory "$(Build.ArtifactStagingDirectory)/${{ parameters.artifactNameSource }}/${{ parameters.moduleName }}" -SigningCertificateBase64 "$(Jason-Thompson)"'
+    arguments: '-ModuleDirectory "$(Build.ArtifactStagingDirectory)/${{ parameters.artifactNameSource }}/${{ parameters.moduleName }}" -SigningCertificate "$(Jason-Thompson)"'
     pwsh: true
 
 - task: PublishBuildArtifacts@1
