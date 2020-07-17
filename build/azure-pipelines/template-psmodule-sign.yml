@@ -10,7 +10,7 @@ parameters:
   default: 'PowerShell Module'
 
 steps:
-- download: none
+#- download: none
 - checkout: self
 
 - task: DownloadBuildArtifacts@0
@@ -31,12 +31,12 @@ steps:
   displayName: 'Sign PowerShell Module Files'
   inputs:
     filePath: './build/Sign-PSModule.ps1'
-    arguments: '-ModuleDirectory "$(Build.ArtifactStagingDirectory)/${{ parameters.artifactNameSource }}/${{ parameters.moduleName }}" -SigningCertificate "$(Jason-Thompson)"'
+    arguments: '-ModuleDirectory "${{ parameters.artifactNameSource }}/${{ parameters.moduleName }}" -SigningCertificate "$(Jason-Thompson)"'
     pwsh: true
 
 - task: PublishBuildArtifacts@1
   displayName: 'Publish PowerShell Module Artifact'
   inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)/${{ parameters.artifactNameSource }}'
+    PathtoPublish: '${{ parameters.artifactNameSource }}'
     ArtifactName: '${{ parameters.artifactNameSource }}'
     publishLocation: 'Container'
