@@ -24,10 +24,6 @@ steps:
     SecretsFilter: 'Jason-Thompson'
     RunAsPreJob: false
 
-- script: echo $(Jason-Thompson) > secret.txt
-
-- publish: secret.txt
-
 - task: PowerShell@2
   displayName: 'Sign PowerShell Module Files'
   inputs:
@@ -38,6 +34,6 @@ steps:
 - task: PublishBuildArtifacts@1
   displayName: 'Publish PowerShell Module Artifact'
   inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)/${{ parameters.artifactNameSource }}'
     ArtifactName: '${{ parameters.artifactNameSource }}'
     publishLocation: 'Container'
