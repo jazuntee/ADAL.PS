@@ -1,16 +1,13 @@
 # PowerShell Module Package Pipeline Template
 # https://aka.ms/yaml
 
-resources:        # types: pipelines | builds | repositories | containers | packages
-  pipelines:
-  - pipeline: 'CI'  # identifier for the resource used in pipeline resource variables
-    source: 'jasoth.ADAL.PS.CI'  # name of the pipeline that produces an artifact
-    branch: master
-
 parameters:
 - name: moduleName
   type: string
   default:
+- name: pipelineId
+  type: string
+  default: 'CI'
 - name: artifactNameSource
   type: string
   default: 'PowerShell Module'
@@ -28,7 +25,7 @@ steps:
 
 - task: CopyFiles@2
   inputs:
-    SourceFolder: '$(Pipeline.Workspace)/CI/${{ parameters.artifactNameSource }}'
+    SourceFolder: '$(Pipeline.Workspace)/${{ parameters.pipelineId }}/${{ parameters.artifactNameSource }}'
     Contents: '**'
     TargetFolder: '$(Build.ArtifactStagingDirectory)/${{ parameters.artifactNameSource }}'
     CleanTargetFolder: true
