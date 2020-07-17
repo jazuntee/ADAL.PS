@@ -3,7 +3,7 @@
 
 resources:        # types: pipelines | builds | repositories | containers | packages
   pipelines:
-  - pipeline: 'build'  # identifier for the resource used in pipeline resource variables
+  - pipeline: 'CI'  # identifier for the resource used in pipeline resource variables
     source: 'jasoth.ADAL.PS.CI'  # name of the pipeline that produces an artifact
     branch: master
 
@@ -51,6 +51,7 @@ stages:
           - template: template-psmodule-sign.yml
             parameters:
               moduleName: 'ADAL.PS'
+              pipelineId: 'CI'
 
 #- stage: Package
 #  jobs: 
