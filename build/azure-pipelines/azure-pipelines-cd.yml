@@ -1,6 +1,12 @@
 # Continuous Delivery Pipeline
 # https://aka.ms/yaml
 
+resources:        # types: pipelines | builds | repositories | containers | packages
+  pipelines:
+  - pipeline: 'build'  # identifier for the resource used in pipeline resource variables
+    source: 'jasoth.ADAL.PS.CI'  # name of the pipeline that produces an artifact
+    branch: master
+
 parameters:
 - name: vmImage
   displayName: 'Pool Image'
@@ -11,14 +17,14 @@ parameters:
   - ubuntu-latest
   - macOS-latest
 
-trigger:
-  batch: true
-  branches:
-    include:
-    - master
-  paths:
-    include:
-    - src/*
+trigger: none
+#  batch: true
+#  branches:
+#    include:
+#    - master
+#  paths:
+#    include:
+#    - src/*
 
 pr: none
 
@@ -32,22 +38,10 @@ pool:
   vmImage: $(vmImage)
 
 stages:
-- stage: Build
+- stage: Package
   jobs: 
-  - job: BuildProcess
-    steps:
-    - template: template-psmodule-build.yml
-      parameters:
-        moduleName: 'ADAL.PS'
-        moduleVersion: '$(moduleVersion)'
-        packages:
-        - id: Microsoft.IdentityModel.Clients.ActiveDirectory
-          version: 5.2.7
-          targetFramework: [net45]
-
   - deployment: SignProcess
-    dependsOn: BuildProcess
-    environment: Production
+    environment: Standalone
     strategy:
       runOnce:
         deploy:
@@ -55,7 +49,6 @@ stages:
           - template: template-psmodule-sign.yml
             parameters:
               moduleName: 'ADAL.PS'
-              moduleVersion: '$(moduleVersion)'
 
 #- stage: Package
 #  jobs: 
@@ -68,8 +61,8 @@ stages:
 #        moduleVersion: '$(moduleVersion)'
 
   - deployment: PackageProcess
-    dependsOn: BuildProcess
-    environment: Production
+    dependsOn: SignProcess
+    environment: Standalone
     strategy:
       runOnce:
         deploy:
