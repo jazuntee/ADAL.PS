@@ -68,7 +68,7 @@ stages:
 #        moduleVersion: '$(moduleVersion)'
 
   - deployment: PackageProcess
-    dependsOn: BuildProcess
+    dependsOn: SignProcess
     environment: Production
     strategy:
       runOnce:
