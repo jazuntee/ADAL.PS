@@ -16,7 +16,7 @@ parameters:
   default: 'PowerShell Module Package'
 
 steps:
-- download: none
+- download:
   artifact: '${{ parameters.artifactNameSource }}'
 
 #- task: DownloadBuildArtifacts@0
