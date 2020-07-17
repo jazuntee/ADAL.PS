@@ -42,6 +42,8 @@ stages:
   jobs: 
   - deployment: SignProcess
     environment: Standalone
+    pool:
+      vmImage: 'windows-latest'
     strategy:
       runOnce:
         deploy:
