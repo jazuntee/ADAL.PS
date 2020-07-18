@@ -31,7 +31,7 @@ variables:
   package: 'Microsoft.IdentityModel.Clients.ActiveDirectory'
 
 pool:
-  vmImage: ${{ parameters.vmImage }}
+  vmImage: $[ parameters.vmImage ]
 
 stages:
 - stage: Build
