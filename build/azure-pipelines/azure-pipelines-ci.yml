@@ -24,8 +24,6 @@ pr: none
 
 variables:
   moduleName: 'ADAL.PS'
-  #moduleVersion.Revision: '$[counter(variables.moduleVersion, 1)]' # Revision is auto-incremented.
-  #moduleVersion: '$(moduleVersion).$(moduleVersion.Revision)'
   vmImage: '${{ parameters.vmImage }}'
   artifactName: 'PSModule'
 
@@ -55,7 +53,6 @@ stages:
       moduleVersion.Prefix: '$[ dependencies.Prepare.outputs[''ModuleParameters.version.Microsoft.IdentityModel.Clients.ActiveDirectory''] ]'
       moduleVersion.Revision: '$[ counter(variables[''moduleVersion.Prefix''], 1) ]'
       moduleVersion: '$[ coalesce(variables[''moduleVersionOverride''], format(''{0}.{1}'', variables[''moduleVersion.Prefix''], variables[''moduleVersion.Revision''])) ]'
-      #moduleVersion: '$[ coalesce(variables[''moduleVersionFull''], variables[''moduleVersion.Prefix''], '''') ]'
       version.Microsoft.IdentityModel.Clients.ActiveDirectory: '$[ dependencies.Prepare.outputs[''ModuleParameters.version.Microsoft.IdentityModel.Clients.ActiveDirectory''] ]'
     steps:
     - template: template-psmodule-build.yml
