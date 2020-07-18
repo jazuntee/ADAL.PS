@@ -11,10 +11,10 @@ parameters:
 - name: pipelineId
   type: string
   default:
-- name: artifactName
+- name: artifactInput
   type: string
-  default: 'PSModule'
-- name: artifactNamePackage
+  default: 'PSModuleSigned'
+- name: artifactOutput
   type: string
   default: 'PSModulePackage'
 
@@ -32,15 +32,15 @@ steps:
 - task: ArchiveFiles@2
   displayName: 'Package PowerShell Module'
   inputs:
-    rootFolderOrFile: '$(Pipeline.Workspace)/${{ parameters.pipelineId }}/${{ parameters.artifactName }}/${{ parameters.moduleName }}'
+    rootFolderOrFile: '$(Pipeline.Workspace)/${{ parameters.pipelineId }}/${{ parameters.artifactInput }}/${{ parameters.moduleName }}'
     includeRootFolder: true
     archiveType: 'zip'
-    archiveFile: '$(Build.ArtifactStagingDirectory)/${{ parameters.artifactName }}/${{ parameters.moduleName }}_${{ parameters.moduleVersion }}.zip'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/${{ parameters.artifactOutput }}/${{ parameters.moduleName }}_${{ parameters.moduleVersion }}.zip'
     replaceExistingArchive: true
 
 - task: PublishPipelineArtifact@1
   displayName: 'Publish PowerShell Module Package Artifact'
   inputs:
-    targetPath: '$(Build.ArtifactStagingDirectory)/${{ parameters.artifactName }}/${{ parameters.moduleName }}_${{ parameters.moduleVersion }}.zip'
-    artifact: '${{ parameters.artifactNamePackage }}'
+    targetPath: '$(Build.ArtifactStagingDirectory)/${{ parameters.artifactOutput }}/${{ parameters.moduleName }}_${{ parameters.moduleVersion }}.zip'
+    artifact: '${{ parameters.artifactOutput }}'
     publishLocation: 'pipeline'
