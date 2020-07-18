@@ -5,7 +5,7 @@ parameters:
 - name: vmImage
   displayName: 'Pool Image'
   type: string
-  default: windows-latest
+  default: 'windows-latest'
   values:
   - windows-latest
   - ubuntu-latest
@@ -24,10 +24,9 @@ pr: none
 
 variables:
   moduleName: 'ADAL.PS'
-  moduleVersion.MajorMinorBuild: '5.2.7' # Manually adjust the version number as needed for semantic versioning.
+  #moduleVersion.MajorMinorBuild: '5.2.7' # Manually adjust the version number as needed for semantic versioning.
   moduleVersion.Revision: '$[counter(variables.moduleVersion.MajorMinorBuild, 1)]' # Revision is auto-incremented.
-  #moduleVersion: '$(moduleVersion.MajorMinorBuild).$(moduleVersion.Revision)'
-  moduleVersion: '$[ variables.moduleVersion.MajorMinorBuild ]'
+  moduleVersion: '${{ moduleVersion.MajorMinorBuild }}.$(moduleVersion.Revision)'
   vmImage: '${{ parameters.vmImage }}'
   artifactName: 'PSModule'
 
@@ -38,7 +37,6 @@ stages:
 - stage: Build
   jobs: 
   - job: Build
-    displayName: '${{ format(''Build {0}'', variables.moduleVersion) }}'
     steps:
     - template: template-psmodule-build.yml
       parameters:
@@ -50,7 +48,6 @@ stages:
           targetFramework: [net45]
           
   - job: Sign
-    displayName: ${{ format('Sign {0}', variables.moduleVersion) }}
     dependsOn: Build
     pool:
       vmImage: 'windows-latest'
@@ -65,6 +62,5 @@ stages:
   dependsOn: Build
   jobs: 
   - job: Test
-    displayName: '${{ format(''Test {0}'', variables.moduleVersion) }}'
     steps:
     - script: 'echo test'
