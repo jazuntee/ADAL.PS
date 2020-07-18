@@ -69,7 +69,8 @@ stages:
     - Prepare
     - Build
     variables:
-      moduleName: '$[ dependencies.Prepare.outputs[''ModuleParameters.moduleName''] ]'
+      #moduleName: '$[ dependencies.Prepare.outputs[''ModuleParameters.moduleName''] ]'
+      moduleName: '$[ dependencies.Build.variables[''ModuleParameters.moduleName''] ]'
       skipComponentGovernanceDetection: true
     pool:
       vmImage: 'windows-latest'
