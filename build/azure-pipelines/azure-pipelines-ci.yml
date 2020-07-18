@@ -25,10 +25,11 @@ pr: none
 variables:
   #moduleName: 'ADAL.PS'
   #moduleVersion.MajorMinorBuild: '5.2.7' # Manually adjust the version number as needed for semantic versioning.
-  moduleVersion.Revision: '$[counter(variables.moduleVersion.MajorMinorBuild, 1)]' # Revision is auto-incremented.
+  moduleVersion.Revision: $[counter(variables.moduleVersion.MajorMinorBuild, 1)] # Revision is auto-incremented.
   moduleVersion: '$(moduleVersion.MajorMinorBuild).$(moduleVersion.Revision)'
   vmImage: '${{ parameters.vmImage }}'
   artifactName: 'PSModule'
+  package: 'Microsoft.IdentityModel.Clients.ActiveDirectory'
 
 pool:
   vmImage: $(vmImage)
@@ -40,6 +41,7 @@ stages:
     #displayName: '${{ variables.moduleVersion.MajorMinorBuild }}'
     steps:
     - task: PowerShell@2
+      name: ModuleParameters
       displayName: 'Get Parameters for PowerShell Module'
       inputs:
         filePath: '$(System.DefaultWorkingDirectory)/build/Get-PipelineParameters.ps1'
@@ -47,11 +49,11 @@ stages:
         pwsh: true
     - template: template-psmodule-build.yml
       parameters:
-        moduleName: '$(moduleName)'
+        moduleName: '$(ModuleParameters.moduleName)'
         moduleVersion: '$(moduleVersion)'
         packages:
         - id: Microsoft.IdentityModel.Clients.ActiveDirectory
-          version: '$(package.Microsoft.IdentityModel.Clients.ActiveDirectory'
+          version: '$(version.Microsoft.IdentityModel.Clients.ActiveDirectory)'
           targetFramework: [net45]
 
   - job: Sign
@@ -63,7 +65,7 @@ stages:
       artifact: '$(artifactName)'
     - template: template-psmodule-sign.yml
       parameters:
-        moduleName: '$(moduleName)'
+        moduleName: $[ dependencies.Build.outputs['ModuleParameters.moduleName'] ]
 
 - stage: Test
   dependsOn: Build
