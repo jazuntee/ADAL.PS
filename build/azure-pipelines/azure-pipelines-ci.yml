@@ -53,9 +53,9 @@ stages:
     #displayName: '${{ variables.moduleVersion.MajorMinorBuild }}'
     variables: 
       moduleName: '$[ dependencies.Prepare.outputs[''ModuleParameters.moduleName''] ]'
-      #moduleVersion.Revision: '$[ counter(dependencies.Prepare.outputs[''ModuleParameters.moduleVersion''], 1) ]'
+      #moduleVersion.Revision2: '$[ counter(dependencies.Prepare.outputs[''ModuleParameters.moduleVersion''], 1) ]'
       moduleVersion: '$[ format(''{0}.{1}'', dependencies.Prepare.outputs[''ModuleParameters.moduleVersion''], ''1'') ]'
-      #version.Microsoft.IdentityModel.Clients.ActiveDirectory: '$[ dependencies.Prepare.outputs[''ModuleParameters.version.Microsoft.IdentityModel.Clients.ActiveDirectory''] ]'
+      version.Microsoft.IdentityModel.Clients.ActiveDirectory: '$[ dependencies.Prepare.outputs[''ModuleParameters.version.Microsoft.IdentityModel.Clients.ActiveDirectory''] ]'
     steps:
     
     - template: template-psmodule-build.yml
