@@ -76,4 +76,4 @@ stages:
             parameters:
               moduleName: 'ADAL.PS'
               moduleVersion: '$(moduleVersion)'
-              artifactName: '$(artifactName)'
+              artifactName: '$(artifactName)Signed'
