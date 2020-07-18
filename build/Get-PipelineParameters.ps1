@@ -29,6 +29,6 @@ $xmlPackagesConfig = New-Object xml
 $xmlPackagesConfig.Load($PackagesConfigFileInfo.FullName)
 
 foreach ($package in $xmlPackagesConfig.packages.package) {
-    Write-Host ('##vso[task.setvariable variable=version.{0};isOutput=true]{1}' -f $package.id, $package.version)
+    Write-Host ('##vso[task.setvariable variable=version.{0};]{1}' -f $package.id, $package.version)
     Write-Host ('##[debug] version.{0} = {1}' -f $package.id, $package.version)
 }
