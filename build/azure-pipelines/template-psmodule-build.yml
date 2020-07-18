@@ -11,9 +11,6 @@ parameters:
 - name: packages
   type: object
   default:
-  - id: Microsoft.IdentityModel.Clients.ActiveDirectory
-    version: 5.2.7
-    targetFramework: [net45]
 - name: artifactOutput
   type: string
   default: 'PSModule'
