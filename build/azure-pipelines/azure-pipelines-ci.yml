@@ -27,6 +27,7 @@ variables:
   moduleVersion.Revision: '$[counter(variables.moduleVersion.MajorMinorBuild, 1)]' # Revision is auto-incremented.
   moduleVersion: '$(moduleVersion.MajorMinorBuild).$(moduleVersion.Revision)'
   vmImage: '${{ parameters.vmImage }}'
+  artifactName: 'PSModule'
 
 pool:
   vmImage: $(vmImage)
@@ -44,12 +45,16 @@ stages:
         - id: Microsoft.IdentityModel.Clients.ActiveDirectory
           version: 5.2.7
           targetFramework: [net45]
+        #artifactName: '$(artifactName)'
   - job: SignProcess
     dependsOn: BuildProcess
     pool:
       vmImage: 'windows-latest'
     steps:
+    - download: current
+      artifact: '$(artifactName)'
     - template: template-psmodule-sign.yml
       parameters:
         moduleName: 'ADAL.PS'
+        #artifactName: '$(artifactName)'
 

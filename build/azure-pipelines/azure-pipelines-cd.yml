@@ -33,6 +33,7 @@ variables:
   moduleVersion.Revision: '$[counter(variables.moduleVersion.MajorMinorBuild, 1)]' # Revision is auto-incremented.
   moduleVersion: '$(moduleVersion.MajorMinorBuild).$(moduleVersion.Revision)'
   vmImage: '${{ parameters.vmImage }}'
+  artifactName: 'PSModule'
 
 pool:
   vmImage: $(vmImage)
@@ -52,6 +53,7 @@ stages:
             parameters:
               moduleName: 'ADAL.PS'
               pipelineId: 'CI'
+              #artifactName: '$(artifactName)'
 
 #- stage: Package
 #  jobs: 
@@ -74,3 +76,4 @@ stages:
             parameters:
               moduleName: 'ADAL.PS'
               moduleVersion: '$(moduleVersion)'
+              #artifactName: '$(artifactName)Signed'
