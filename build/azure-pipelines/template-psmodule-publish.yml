@@ -17,10 +17,13 @@ parameters:
   - name: NuGetApiKeySecretName
     type: string
     default: 'PSGallery-API-Key'
+  - name: Unlist
+    type: boolean
+    default: false
 
 steps:
   - checkout: self
-  
+
   - task: AzureKeyVault@1
     displayName: 'Download NuGet API Key'
     inputs:
@@ -33,5 +36,5 @@ steps:
     displayName: 'Publish PowerShell Module'
     inputs:
       filePath: '$(System.DefaultWorkingDirectory)/build/Publish-PSModule.ps1'
-      arguments: '-ModulePath "$(Pipeline.Workspace)/${{ parameters.pipelineId }}/${{ parameters.artifactInput }}/${{ parameters.moduleName }}" -RepositorySourceLocation ${{ parameters.RepositorySourceLocation }} -NuGetApiKey "$(${{ parameters.NuGetApiKeySecretName }})"'
+      arguments: '-ModulePath "$(Pipeline.Workspace)/${{ parameters.pipelineId }}/${{ parameters.artifactInput }}/${{ parameters.moduleName }}" -RepositorySourceLocation ${{ parameters.RepositorySourceLocation }} -NuGetApiKey "$(${{ parameters.NuGetApiKeySecretName }})" -Unlist:$${{ parameters.Unlist }}'
       pwsh: true
