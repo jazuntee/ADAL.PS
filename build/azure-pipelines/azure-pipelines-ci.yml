@@ -74,8 +74,8 @@ stages:
     pool:
       vmImage: 'windows-latest'
     steps:
-#    - download: current
-#      artifact: '$(artifactName)'
+    - download: current
+      artifact: '$(artifactName)'
     - template: template-psmodule-sign.yml
       parameters:
         moduleName: '$(moduleName)'
