@@ -26,7 +26,8 @@ variables:
   moduleName: 'ADAL.PS'
   moduleVersion.MajorMinorBuild: '5.2.7' # Manually adjust the version number as needed for semantic versioning.
   moduleVersion.Revision: '$[counter(variables.moduleVersion.MajorMinorBuild, 1)]' # Revision is auto-incremented.
-  moduleVersion: '$(moduleVersion.MajorMinorBuild).$(moduleVersion.Revision)'
+  #moduleVersion: '$(moduleVersion.MajorMinorBuild).$(moduleVersion.Revision)'
+  moduleVersion: '$[ variables.moduleVersion.MajorMinorBuild ]'
   vmImage: '${{ parameters.vmImage }}'
   artifactName: 'PSModule'
 
