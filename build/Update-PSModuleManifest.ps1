@@ -1,7 +1,7 @@
 param
 (
     # Path to Module Manifest
-    [parameter(Mandatory=$false)]
+    [parameter(Mandatory = $false)]
     [string] $ModuleManifestPath,
     # Module Version
     [parameter(Mandatory = $false)]
@@ -10,13 +10,13 @@ param
 
 ## Initialize
 Import-Module "$PSScriptRoot\CommonFunctions.psm1" -Force -WarningAction SilentlyContinue -ErrorAction Stop
-[hashtable] $paramUpdateModuleManifest = @{}
+[hashtable] $paramUpdateModuleManifest = @{ }
 if ($ModuleVersion) { $paramUpdateModuleManifest['ModuleVersion'] = $ModuleVersion }
 
 [System.IO.FileInfo] $ModuleManifestFileInfo = Get-PathInfo $ModuleManifestPath -DefaultFilename "*.psd1" -ErrorAction Stop
 
 ## Read Module Manifest
-$ModuleManifest = Import-PowershellDataFile $ModuleManifestFileInfo.FullName
+$ModuleManifest = Import-PowerShellDataFile $ModuleManifestFileInfo.FullName
 [System.IO.DirectoryInfo] $ModuleOutputDirectoryInfo = $ModuleManifestFileInfo.Directory
 
 ## Get Module Output FileList
