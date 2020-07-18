@@ -66,9 +66,9 @@ steps:
     arguments: '-ModuleManifestPath "$(Build.ArtifactStagingDirectory)/${{ parameters.artifactName }}/${{ parameters.moduleName }}/${{ parameters.moduleName }}.psd1" -ModuleVersion "${{ parameters.moduleVersion }}"'
     pwsh: true
 
-- task: PublishBuildArtifacts@1
+- task: PublishPipelineArtifact@1
   displayName: 'Publish PowerShell Module Artifact'
   inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)/${{ parameters.artifactName }}'
-    ArtifactName: '${{ parameters.artifactName }}'
-    publishLocation: 'Container'
+    targetPath: '$(Build.ArtifactStagingDirectory)/${{ parameters.artifactName }}'
+    artifact: '${{ parameters.artifactName }}'
+    publishLocation: 'pipeline'
