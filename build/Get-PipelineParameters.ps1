@@ -21,7 +21,8 @@ Write-Host ('##vso[task.setvariable variable=moduleName;isOutput=true]{0}' -f $M
 Write-Host ('##[debug] {0} = {1}' -f 'moduleName', $env:moduleName)
 
 Write-Host ('##vso[task.setvariable variable=moduleVersion;]{0}' -f $ModuleManifest.ModuleVersion)
-Write-Host ('##[debug] {0} = {1}' -f 'moduleVersion', $env:moduleVersion)
+Write-Host ('##[debug] {0} = {1}' -f 'moduleVersion', $env:MODULEVERSION)
+Write-Host ('##[debug] {0} = {1}' -f 'moduleVersion', $ModuleManifest.ModuleVersion)
 
 ## Read Packages Configuration
 $xmlPackagesConfig = New-Object xml
