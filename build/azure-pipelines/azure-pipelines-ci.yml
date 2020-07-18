@@ -37,7 +37,7 @@ stages:
 - stage: Build
   jobs: 
   - job: Build
-    displayName: '$[ variables.moduleVersion.Revision ]'
+    displayName: '${{ variables.moduleVersion.Revision }}'
     steps:
     - template: template-psmodule-build.yml
       parameters:
