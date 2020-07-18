@@ -16,7 +16,7 @@ parameters:
   default: 'PSModule'
 - name: artifactNamePackage
   type: string
-  default: 'PSModule_Package'
+  default: 'PSModulePackage'
 
 steps:
 #- download: current
