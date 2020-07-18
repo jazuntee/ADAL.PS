@@ -67,7 +67,9 @@ stages:
           targetFramework: [net45]
 
   - job: Sign
-    dependsOn: Build
+    dependsOn:
+    - Prepare
+    - Build
     variables:
       moduleName: '$[ dependencies.Prepare.outputs[''ModuleParameters.moduleName''] ]'
       skipComponentGovernanceDetection: true
