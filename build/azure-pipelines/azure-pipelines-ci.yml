@@ -27,6 +27,7 @@ variables:
   moduleVersion.Revision: '$[counter(variables.moduleVersion.MajorMinorBuild, 1)]' # Revision is auto-incremented.
   moduleVersion: '$(moduleVersion.MajorMinorBuild).$(moduleVersion.Revision)'
   vmImage: '${{ parameters.vmImage }}'
+  artifactName: 'PSModule'
 
 pool:
   vmImage: $(vmImage)
@@ -49,7 +50,10 @@ stages:
     pool:
       vmImage: 'windows-latest'
     steps:
+    - download: current
+      artifact: '$(artifactName)'
     - template: template-psmodule-sign.yml
       parameters:
         moduleName: 'ADAL.PS'
+        artifact: '$(artifactName)'
 
