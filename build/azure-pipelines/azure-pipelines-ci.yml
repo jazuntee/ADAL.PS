@@ -37,8 +37,14 @@ stages:
 - stage: Build
   jobs: 
   - job: Build
-    displayName: '${{ variables.moduleVersion.MajorMinorBuild }}'
+    #displayName: '${{ variables.moduleVersion.MajorMinorBuild }}'
     steps:
+    - task: PowerShell@2
+      displayName: 'Get Parameters for PowerShell Module'
+      inputs:
+        filePath: '$(System.DefaultWorkingDirectory)/build/Get-PipelineParameters.ps1'
+        arguments: '-ModuleManifestPath "$(Build.SourceDirectory)/src" -PackagesConfigPath "$(Build.SourceDirectory)/packages.config"'
+        pwsh: true
     - template: template-psmodule-build.yml
       parameters:
         moduleName: '$(moduleName)'
