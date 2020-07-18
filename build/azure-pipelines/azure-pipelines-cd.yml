@@ -70,8 +70,27 @@ stages:
               moduleVersion: '$(moduleVersion)'
               #artifactName: '$(artifactName)Signed'
 
-  - deployment: PublishTest
+- stage: Test
+  dependsOn: Sign
+  jobs: 
+  - deployment: Publish
     environment: Test
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - template: template-psmodule-publish.yml
+            parameters:
+              moduleName: 'ADAL.PS'
+              #artifactName: '$(artifactName)Signed'
+              RepositorySourceLocation: 'https://www.poshtestgallery.com/api/v2'
+              NuGetApiKeySecretName: 'PSTestGallery-API-Key'
+
+- stage: Production
+  dependsOn: Sign
+  jobs: 
+  - deployment: Publish
+    environment: Production
     strategy:
       runOnce:
         deploy:
