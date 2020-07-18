@@ -19,6 +19,8 @@ parameters:
     default: 'PSGallery-API-Key'
 
 steps:
+  - checkout: self
+  
   - task: AzureKeyVault@1
     displayName: 'Download NuGet API Key'
     inputs:
