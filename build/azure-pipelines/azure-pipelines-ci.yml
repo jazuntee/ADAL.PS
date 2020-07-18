@@ -68,6 +68,8 @@ stages:
 
   - job: Sign
     dependsOn: Build
+    variables:
+      skipComponentGovernanceDetection: true
     pool:
       vmImage: 'windows-latest'
     steps:
