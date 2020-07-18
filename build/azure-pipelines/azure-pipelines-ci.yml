@@ -50,11 +50,10 @@ stages:
         pwsh: true
   - job: Build
     dependsOn: Prepare
-    #displayName: '${{ variables.moduleVersion.MajorMinorBuild }}'
     variables: 
       moduleName: '$[ dependencies.Prepare.outputs[''ModuleParameters.moduleName''] ]'
       moduleVersion.Revision: '$[ counter(dependencies.Prepare.outputs[''ModuleParameters.moduleVersion''], 1) ]'
-      moduleVersion: '$[ format(''{0}.{1}'', dependencies.Prepare.outputs[''ModuleParameters.moduleVersion''], ''1'') ]'
+      moduleVersion: '$[ format(''{0}.{1}'', dependencies.Prepare.outputs[''ModuleParameters.moduleVersion''], variables.moduleVersion.Revision) ]'
       version.Microsoft.IdentityModel.Clients.ActiveDirectory: '$[ dependencies.Prepare.outputs[''ModuleParameters.version.Microsoft.IdentityModel.Clients.ActiveDirectory''] ]'
     steps:
     
