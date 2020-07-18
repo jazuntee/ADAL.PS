@@ -43,7 +43,7 @@ stages:
       displayName: 'Get Parameters for PowerShell Module'
       inputs:
         filePath: '$(System.DefaultWorkingDirectory)/build/Get-PipelineParameters.ps1'
-        arguments: '-ModuleManifestPath "$(Build.SourceDirectory)/src" -PackagesConfigPath "$(Build.SourceDirectory)/packages.config"'
+        arguments: '-ModuleManifestPath "$(Build.SourcesDirectory)/src/*.psd1" -PackagesConfigPath "$(Build.SourcesDirectory)/packages.config"'
         pwsh: true
     - template: template-psmodule-build.yml
       parameters:
