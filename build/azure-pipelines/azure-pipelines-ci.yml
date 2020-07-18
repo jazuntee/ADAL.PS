@@ -37,7 +37,7 @@ stages:
 - stage: Build
   jobs: 
   - job: Build
-    displayName: 'Build $(moduleVersion)'
+    displayName: '$[format(''Build {0}'', variables.moduleVersion)]'
     steps:
     - template: template-psmodule-build.yml
       parameters:
@@ -49,7 +49,7 @@ stages:
           targetFramework: [net45]
           
   - job: Sign
-    displayName: 'Sign $(moduleVersion)'
+    displayName: '$[format(''Sign {0}'', variables.moduleVersion)]'
     dependsOn: Build
     pool:
       vmImage: 'windows-latest'
