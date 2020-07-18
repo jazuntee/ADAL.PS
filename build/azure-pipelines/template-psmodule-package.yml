@@ -11,36 +11,36 @@ parameters:
 - name: pipelineId
   type: string
   default:
-- name: artifactNameSource
+- name: artifactName
   type: string
-  default: 'PowerShell Module'
+  default: 'PSModule'
 - name: artifactNamePackage
   type: string
-  default: 'PowerShell Module Package'
+  default: 'PSModule_Package'
 
 steps:
 #- download: current
-#  artifact: '${{ parameters.artifactNameSource }}'
+#  artifact: '${{ parameters.artifactName }}'
 
 #- task: DownloadBuildArtifacts@0
 #  inputs:
 #    buildType: 'current'
 #    downloadType: 'single'
-#    artifactName: '${{ parameters.artifactNameSource }}'
+#    artifactName: '${{ parameters.artifactName }}'
 #    downloadPath: '$(System.ArtifactsDirectory)'
 
 - task: ArchiveFiles@2
   displayName: 'Package PowerShell Module'
   inputs:
-    rootFolderOrFile: '$(Pipeline.Workspace)/${{ parameters.pipelineId }}/${{ parameters.artifactNameSource }}/${{ parameters.moduleName }}'
+    rootFolderOrFile: '$(Pipeline.Workspace)/${{ parameters.pipelineId }}/${{ parameters.artifactName }}/${{ parameters.moduleName }}'
     includeRootFolder: true
     archiveType: 'zip'
-    archiveFile: '$(Build.ArtifactStagingDirectory)/${{ parameters.artifactNamePackage }}/${{ parameters.moduleName }}_${{ parameters.moduleVersion }}.zip'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/${{ parameters.artifactName }}/${{ parameters.moduleName }}_${{ parameters.moduleVersion }}.zip'
     replaceExistingArchive: true
 
 - task: PublishBuildArtifacts@1
   displayName: 'Publish PowerShell Module Package Artifact'
   inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)/${{ parameters.artifactNamePackage }}/${{ parameters.moduleName }}_${{ parameters.moduleVersion }}.zip'
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)/${{ parameters.artifactName }}/${{ parameters.moduleName }}_${{ parameters.moduleVersion }}.zip'
     ArtifactName: '${{ parameters.artifactNamePackage }}'
     publishLocation: 'Container'
