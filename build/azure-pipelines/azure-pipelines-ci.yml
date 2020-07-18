@@ -36,7 +36,6 @@ pool:
 stages:
 - stage: Build
   jobs: 
-
   - job: Build
     displayName: 'Build $(moduleVersion)'
     steps:
