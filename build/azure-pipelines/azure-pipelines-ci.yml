@@ -5,7 +5,7 @@ parameters:
 - name: vmImage
   displayName: 'Pool Image'
   type: string
-  default: windows-latest
+  default: 'windows-latest'
   values:
   - windows-latest
   - ubuntu-latest
@@ -23,7 +23,8 @@ trigger:
 pr: none
 
 variables:
-  moduleVersion.MajorMinorBuild: '5.2.7' # Manually adjust the version number as needed for semantic versioning.
+  moduleName: 'ADAL.PS'
+  #moduleVersion.MajorMinorBuild: '5.2.7' # Manually adjust the version number as needed for semantic versioning.
   moduleVersion.Revision: '$[counter(variables.moduleVersion.MajorMinorBuild, 1)]' # Revision is auto-incremented.
   moduleVersion: '$(moduleVersion.MajorMinorBuild).$(moduleVersion.Revision)'
   vmImage: '${{ parameters.vmImage }}'
@@ -35,19 +36,26 @@ pool:
 stages:
 - stage: Build
   jobs: 
-  - job: BuildProcess
+  - job: Build
+    #displayName: '${{ variables.moduleVersion.MajorMinorBuild }}'
     steps:
+    - task: PowerShell@2
+      displayName: 'Get Parameters for PowerShell Module'
+      inputs:
+        filePath: '$(System.DefaultWorkingDirectory)/build/Get-PipelineParameters.ps1'
+        arguments: '-ModuleManifestPath "$(Build.SourceDirectory)/src" -PackagesConfigPath "$(Build.SourceDirectory)/packages.config"'
+        pwsh: true
     - template: template-psmodule-build.yml
       parameters:
-        moduleName: 'ADAL.PS'
+        moduleName: '$(moduleName)'
         moduleVersion: '$(moduleVersion)'
         packages:
         - id: Microsoft.IdentityModel.Clients.ActiveDirectory
           version: 5.2.7
           targetFramework: [net45]
-        #artifactName: '$(artifactName)'
-  - job: SignProcess
-    dependsOn: BuildProcess
+          
+  - job: Sign
+    dependsOn: Build
     pool:
       vmImage: 'windows-latest'
     steps:
@@ -55,6 +63,11 @@ stages:
       artifact: '$(artifactName)'
     - template: template-psmodule-sign.yml
       parameters:
-        moduleName: 'ADAL.PS'
-        #artifactName: '$(artifactName)'
+        moduleName: '$(moduleName)'
 
+- stage: Test
+  dependsOn: Build
+  jobs: 
+  - job: Test
+    steps:
+    - script: 'echo test'
