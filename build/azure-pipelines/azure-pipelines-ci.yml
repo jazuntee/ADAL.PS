@@ -35,7 +35,8 @@ pool:
 stages:
 - stage: Build
   jobs: 
-  - job: BuildProcess
+  - job: Build
+    displayName: 'Build $(moduleVersion)'
     steps:
     - template: template-psmodule-build.yml
       parameters:
@@ -46,8 +47,9 @@ stages:
           version: 5.2.7
           targetFramework: [net45]
         #artifactName: '$(artifactName)'
-  - job: SignProcess
-    dependsOn: BuildProcess
+  - job: Sign
+    displayName: 'Sign $(moduleVersion)'
+    dependsOn: Build
     pool:
       vmImage: 'windows-latest'
     steps:
