@@ -19,7 +19,7 @@ steps:
 - task: CopyFiles@2
   displayName: 'Copy Source to Staging'
   inputs:
-    SourceFolder: '$(System.DefaultWorkingDirectory)/src'
+    SourceFolder: '$(Build.SourcesDirectory)/src'
     Contents: '**'
     TargetFolder: '$(Pipeline.Workspace)/${{ parameters.artifactOutput }}/${{ parameters.moduleName }}'
     preserveTimestamp: true
@@ -31,7 +31,7 @@ steps:
     TargetFolder: '$(Pipeline.Workspace)/${{ parameters.artifactOutput }}/${{ parameters.moduleName }}'
     preserveTimestamp: true
 
-- pwsh: 'Rename-Item "$(Pipeline.Workspace)/${{ parameters.moduleName }}/LICENSE" -NewName "License.txt"'
+- pwsh: 'Rename-Item "$(Pipeline.Workspace)/${{ parameters.artifactOutput }}/${{ parameters.moduleName }}/LICENSE" -NewName "License.txt"'
   displayName: 'Rename LICENSE to License.txt'
   env:
     StagingDirectory: '$(Pipeline.Workspace)/${{ parameters.artifactOutput }}'
