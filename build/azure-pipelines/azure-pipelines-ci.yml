@@ -45,6 +45,7 @@ stages:
         - id: Microsoft.IdentityModel.Clients.ActiveDirectory
           version: 5.2.7
           targetFramework: [net45]
+        artifactName: '$(artifactName)'
   - job: SignProcess
     dependsOn: BuildProcess
     pool:
@@ -55,5 +56,5 @@ stages:
     - template: template-psmodule-sign.yml
       parameters:
         moduleName: 'ADAL.PS'
-        artifact: '$(artifactName)'
+        artifactName: '$(artifactName)'
 
