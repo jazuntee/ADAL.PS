@@ -39,7 +39,7 @@ pool:
   vmImage: $(vmImage)
 
 stages:
-- stage: Package
+- stage: Sign
   jobs: 
   - deployment: SignProcess
     environment: Standalone
@@ -55,18 +55,10 @@ stages:
               pipelineId: 'CI'
               #artifactName: '$(artifactName)'
 
-#- stage: Package
-#  jobs: 
-#  - job: PackageProcess
-#    dependsOn: BuildProcess
-#    steps:
-#    - template: template-psmodule-package.yml
-#      parameters:
-#        moduleName: 'ADAL.PS'
-#        moduleVersion: '$(moduleVersion)'
-
+- stage: Deploy
+  dependsOn: Sign
+  jobs: 
   - deployment: PackageProcess
-    dependsOn: SignProcess
     environment: Standalone
     strategy:
       runOnce:
@@ -77,3 +69,16 @@ stages:
               moduleName: 'ADAL.PS'
               moduleVersion: '$(moduleVersion)'
               #artifactName: '$(artifactName)Signed'
+
+  - deployment: PublishTest
+    environment: Test
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - template: template-psmodule-publish.yml
+            parameters:
+              moduleName: 'ADAL.PS'
+              #artifactName: '$(artifactName)Signed'
+              RepositorySourceLocation: 'https://www.poshtestgallery.com/api/v2'
+              NuGetApiKeySecretName: 'PSTestGallery-API-Key'
