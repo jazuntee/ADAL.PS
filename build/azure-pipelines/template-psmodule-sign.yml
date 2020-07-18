@@ -7,7 +7,7 @@ parameters:
   default:
 - name: pipelineId
   type: string
-  default:
+  default: ''
 - name: artifactNameSource
   type: string
   default: 'PowerShell Module'
