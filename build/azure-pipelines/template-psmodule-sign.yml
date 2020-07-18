@@ -49,5 +49,5 @@ steps:
   displayName: 'Publish PowerShell Module Artifact'
   inputs:
     targetPath: '$(Build.ArtifactStagingDirectory)/${{ parameters.artifactName }}'
-    artifact: '${{ parameters.artifactName }}'
+    artifact: '${{ parameters.artifactName }}Signed'
     publishLocation: 'pipeline'
