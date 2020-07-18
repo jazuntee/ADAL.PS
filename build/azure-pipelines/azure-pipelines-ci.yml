@@ -56,5 +56,5 @@ stages:
     - template: template-psmodule-sign.yml
       parameters:
         moduleName: 'ADAL.PS'
-        artifactName: '$(artifactName)'
+        artifactName: '$(artifactName)Signed'
 
