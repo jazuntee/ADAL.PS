@@ -8,9 +8,9 @@ parameters:
 - name: pipelineId
   type: string
   default:
-- name: artifactNameSource
+- name: artifactName
   type: string
-  default: 'PowerShell Module'
+  default: 'PSModule'
 
 steps:
 #- download: none
@@ -25,9 +25,9 @@ steps:
 
 - task: CopyFiles@2
   inputs:
-    SourceFolder: '$(Pipeline.Workspace)/${{ parameters.pipelineId }}/${{ parameters.artifactNameSource }}'
+    SourceFolder: '$(Pipeline.Workspace)/${{ parameters.pipelineId }}/${{ parameters.artifactName }}'
     Contents: '**'
-    TargetFolder: '$(Build.ArtifactStagingDirectory)/${{ parameters.artifactNameSource }}'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)/${{ parameters.artifactName }}'
     CleanTargetFolder: true
     preserveTimestamp: true
 
@@ -42,12 +42,12 @@ steps:
   displayName: 'Sign PowerShell Module Files'
   inputs:
     filePath: '$(System.DefaultWorkingDirectory)/build/Sign-PSModule.ps1'
-    arguments: '-ModuleDirectory "$(Build.ArtifactStagingDirectory)/${{ parameters.artifactNameSource }}/${{ parameters.moduleName }}" -SigningCertificate "$(Jason-Thompson)"'
+    arguments: '-ModuleDirectory "$(Build.ArtifactStagingDirectory)/${{ parameters.artifactName }}/${{ parameters.moduleName }}" -SigningCertificate "$(Jason-Thompson)"'
     pwsh: true
 
 - task: PublishBuildArtifacts@1
   displayName: 'Publish PowerShell Module Artifact'
   inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)/${{ parameters.artifactNameSource }}'
-    ArtifactName: '${{ parameters.artifactNameSource }}'
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)/${{ parameters.artifactName }}'
+    ArtifactName: '${{ parameters.artifactName }}'
     publishLocation: 'Container'
