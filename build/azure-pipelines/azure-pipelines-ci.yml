@@ -59,3 +59,8 @@ stages:
     - template: template-psmodule-sign.yml
       parameters:
         moduleName: '$(moduleName)'
+
+- stage: Test
+  dependsOn: Build
+  jobs: 
+  - script: 'echo test'
