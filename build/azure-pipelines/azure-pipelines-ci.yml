@@ -40,7 +40,7 @@ stages:
       skipComponentGovernanceDetection: true
     steps:
     - task: PowerShell@2
-      name: ModuleParameters2
+      name: ModuleParameters
       displayName: 'Get Parameters for PowerShell Module'
       inputs:
         filePath: '$(System.DefaultWorkingDirectory)/build/Get-PipelineParameters.ps1'
