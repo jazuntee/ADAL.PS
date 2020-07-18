@@ -5,9 +5,6 @@ parameters:
 - name: moduleName
   type: string
   default:
-- name: pipelineId
-  type: string
-  default: ''
 - name: artifactNameSource
   type: string
   default: 'PowerShell Module'
@@ -25,7 +22,7 @@ steps:
 
 - task: CopyFiles@2
   inputs:
-    SourceFolder: '$(Pipeline.Workspace)/${{ parameters.pipelineId }}/${{ parameters.artifactNameSource }}'
+    SourceFolder: '$(Pipeline.Workspace)/${{ parameters.artifactNameSource }}'
     Contents: '**'
     TargetFolder: '$(Build.ArtifactStagingDirectory)/${{ parameters.artifactNameSource }}'
     CleanTargetFolder: true
