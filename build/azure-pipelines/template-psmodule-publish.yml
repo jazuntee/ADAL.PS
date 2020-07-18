@@ -1,11 +1,8 @@
-# PowerShell Module Package Pipeline Template
+# PowerShell Module Publish Pipeline Template
 # https://aka.ms/yaml
 
 parameters:
   - name: moduleName
-    type: string
-    default:
-  - name: moduleVersion
     type: string
     default:
   - name: pipelineId
