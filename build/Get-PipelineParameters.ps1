@@ -2,7 +2,7 @@ param
 (
     #
     [parameter(Mandatory = $false)]
-    [string] $ModuleManifestPath = "..\src",
+    [string] $ModuleManifestPath = "..\src\*.psm1",
     #
     [parameter(Mandatory = $false)]
     [string] $PackagesConfigPath = "..\"
@@ -15,7 +15,7 @@ Import-Module "$PSScriptRoot\CommonFunctions.psm1" -Force -WarningAction Silentl
 [System.IO.FileInfo] $PackagesConfigFileInfo = Get-PathInfo $PackagesConfigPath -DefaultFilename "packages.config" -ErrorAction Stop
 
 ## Read Module Manifest
-$ModuleManifest = Import-PowerShellDataFile $ModuleManifestFileInfo.FullName
+$ModuleManifest = Import-PowerShellDataFile $ModuleManifestFileInfo.FullName -ErrorAction Stop
 
 Write-Host ('##vso[task.setvariable variable=moduleName;isOutput=true]{0}' -f $ModuleManifestFileInfo.BaseName)
 Write-Host ('##vso[task.setvariable variable=moduleVersion;isOutput=true]{0}' -f $ModuleManifest.ModuleVersion)
