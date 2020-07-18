@@ -17,17 +17,17 @@ Import-Module "$PSScriptRoot\CommonFunctions.psm1" -Force -WarningAction Silentl
 ## Read Module Manifest
 $ModuleManifest = Import-PowerShellDataFile $ModuleManifestFileInfo.FullName -ErrorAction Stop
 
-Write-Host ('##vso[task.setvariable variable=moduleName2;isOutput=true]{0}' -f $ModuleManifestFileInfo.BaseName)
-Write-Host ('##[debug] {0} = {1}' -f 'moduleName2', $env:moduleName2)
+Write-Host ('##vso[task.setvariable variable=moduleName;isOutput=true]{0}' -f $ModuleManifestFileInfo.BaseName)
+Write-Host ('##[debug] {0} = {1}' -f 'moduleName', $env:moduleName)
 
-Write-Output ('##vso[task.setvariable variable=moduleVersion;isOutput=true]{0}' -f $ModuleManifest.ModuleVersion)
-Write-Output ('##[debug] {0} = {1}' -f 'moduleVersion', $env:moduleVersion)
+Write-Host ('##vso[task.setvariable variable=moduleVersion;]{0}' -f $ModuleManifest.ModuleVersion)
+Write-Host ('##[debug] {0} = {1}' -f 'moduleVersion', $env:moduleVersion)
 
 ## Read Packages Configuration
 $xmlPackagesConfig = New-Object xml
 $xmlPackagesConfig.Load($PackagesConfigFileInfo.FullName)
 
 foreach ($package in $xmlPackagesConfig.packages.package) {
-    Write-Host ('##vso[task.setvariable variable=package.{0};isOutput=true]{1}' -f $package.id, $package.version)
-    Write-Host ('##[debug] package.{0} = {1}' -f $package.id, $package.version)
+    Write-Host ('##vso[task.setvariable variable=version.{0};isOutput=true]{1}' -f $package.id, $package.version)
+    Write-Host ('##[debug] version.{0} = {1}' -f $package.id, $package.version)
 }
