@@ -29,6 +29,7 @@ variables:
   moduleVersion: '$(moduleVersion.MajorMinorBuild).$(moduleVersion.Revision)'
   vmImage: '${{ parameters.vmImage }}'
   artifactName: 'PSModule'
+  package: 'Microsoft.IdentityModel.Clients.ActiveDirectory'
 
 pool:
   vmImage: $(vmImage)
@@ -47,11 +48,11 @@ stages:
         pwsh: true
     - template: template-psmodule-build.yml
       parameters:
-        moduleName: '$(moduleName)'
+        moduleName: '$(moduleName2)'
         moduleVersion: '$(moduleVersion)'
         packages:
-        - id: Microsoft.IdentityModel.Clients.ActiveDirectory
-          version: '$(package.Microsoft.IdentityModel.Clients.ActiveDirectory'
+        - id: $(package)
+          version: '$(package.$(package))'
           targetFramework: [net45]
 
   - job: Sign
