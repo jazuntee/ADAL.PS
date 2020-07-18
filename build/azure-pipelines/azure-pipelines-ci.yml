@@ -63,4 +63,7 @@ stages:
 - stage: Test
   dependsOn: Build
   jobs: 
-  - script: 'echo test'
+  - job: Test
+    displayName: '$[format(''Test {0}'', variables.moduleVersion)]'
+    steps:
+    - script: 'echo test'
