@@ -22,14 +22,14 @@ steps:
 #- download: none
 - checkout: self
 
-- task: CopyFiles@2
-  displayName: 'Copy PowerShell Module to Staging'
-  inputs:
-    SourceFolder: '$(Pipeline.Workspace)/${{ parameters.pipelineId }}/${{ parameters.artifactInput }}'
-    Contents: '**'
-    TargetFolder: '$(Build.ArtifactStagingDirectory)/${{ parameters.artifactOutput }}'
-    CleanTargetFolder: true
-    preserveTimestamp: true
+#- task: CopyFiles@2
+#  displayName: 'Copy PowerShell Module to Staging'
+#  inputs:
+#    SourceFolder: '$(Pipeline.Workspace)/${{ parameters.pipelineId }}/${{ parameters.artifactInput }}'
+#    Contents: '**'
+#    TargetFolder: '$(Build.ArtifactStagingDirectory)/${{ parameters.artifactOutput }}'
+#    CleanTargetFolder: true
+#    preserveTimestamp: true
 
 - task: AzureKeyVault@1
   displayName: 'Download Signing Certificate'
@@ -43,12 +43,12 @@ steps:
   displayName: 'Sign PowerShell Module Files'
   inputs:
     filePath: '$(System.DefaultWorkingDirectory)/build/Sign-PSModule.ps1'
-    arguments: '-ModuleDirectory "$(Build.ArtifactStagingDirectory)/${{ parameters.artifactOutput }}/${{ parameters.moduleName }}" -SigningCertificate "$(${{ parameters.SigningCertificateSecretName }})"'
+    arguments: '-ModuleDirectory "$(Pipeline.Workspace)/${{ parameters.artifactOutput }}/${{ parameters.moduleName }}" -SigningCertificate "$(${{ parameters.SigningCertificateSecretName }})"'
     pwsh: true
 
 - task: PublishPipelineArtifact@1
   displayName: 'Publish PowerShell Module Artifact'
   inputs:
-    targetPath: '$(Build.ArtifactStagingDirectory)/${{ parameters.artifactOutput }}'
+    targetPath: '$(Pipeline.Workspace)/${{ parameters.artifactOutput }}'
     artifact: '${{ parameters.artifactOutput }}'
     publishLocation: 'pipeline'
