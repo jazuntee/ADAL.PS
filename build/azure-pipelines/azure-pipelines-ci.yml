@@ -23,7 +23,7 @@ trigger:
 pr: none
 
 variables:
-  moduleName: 'ADAL.PS'
+  #moduleName: 'ADAL.PS'
   #moduleVersion.MajorMinorBuild: '5.2.7' # Manually adjust the version number as needed for semantic versioning.
   moduleVersion.Revision: '$[counter(variables.moduleVersion.MajorMinorBuild, 1)]' # Revision is auto-incremented.
   moduleVersion: '$(moduleVersion.MajorMinorBuild).$(moduleVersion.Revision)'
@@ -51,9 +51,9 @@ stages:
         moduleVersion: '$(moduleVersion)'
         packages:
         - id: Microsoft.IdentityModel.Clients.ActiveDirectory
-          version: 5.2.7
+          version: '$(package.Microsoft.IdentityModel.Clients.ActiveDirectory'
           targetFramework: [net45]
-          
+
   - job: Sign
     dependsOn: Build
     pool:
