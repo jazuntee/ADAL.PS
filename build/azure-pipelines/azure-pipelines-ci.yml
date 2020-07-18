@@ -25,7 +25,7 @@ pr: none
 variables:
   #moduleName: 'ADAL.PS'
   #moduleVersion.MajorMinorBuild: '5.2.7' # Manually adjust the version number as needed for semantic versioning.
-  moduleVersion.Revision: $[counter(variables.moduleVersion.MajorMinorBuild, 1)] # Revision is auto-incremented.
+  moduleVersion.Revision: '$[counter(variables.moduleVersion.MajorMinorBuild, 1)]' # Revision is auto-incremented.
   moduleVersion: '$(moduleVersion.MajorMinorBuild).$(moduleVersion.Revision)'
   vmImage: '${{ parameters.vmImage }}'
   artifactName: 'PSModule'
@@ -37,8 +37,7 @@ pool:
 stages:
 - stage: Build
   jobs: 
-  - job: Build
-    #displayName: '${{ variables.moduleVersion.MajorMinorBuild }}'
+  - job: Prepare
     steps:
     - task: PowerShell@2
       name: ModuleParameters
@@ -47,9 +46,19 @@ stages:
         filePath: '$(System.DefaultWorkingDirectory)/build/Get-PipelineParameters.ps1'
         arguments: '-ModuleManifestPath "$(Build.SourcesDirectory)/src/*.psd1" -PackagesConfigPath "$(Build.SourcesDirectory)/packages.config"'
         pwsh: true
+  - job: Build
+    dependsOn: Prepare
+    #displayName: '${{ variables.moduleVersion.MajorMinorBuild }}'
+    variables: 
+      moduleName: '$[ dependencies.Prepare.outputs[''ModuleParameters.moduleName''] ]'
+      moduleVersion.Revision: '$[counter(dependencies.Prepare.outputs[''ModuleParameters.moduleVersion''], 1)]'
+      moduleVersion: '$[ format(''{0}.{1}'', dependencies.Prepare.outputs[''ModuleParameters.moduleVersion''], moduleVersion.Revision ]'
+      version.Microsoft.IdentityModel.Clients.ActiveDirectory: '$[ dependencies.Prepare.outputs[''ModuleParameters.version.Microsoft.IdentityModel.Clients.ActiveDirectory''] ]'
+    steps:
+    
     - template: template-psmodule-build.yml
       parameters:
-        moduleName: '$(ModuleParameters.moduleName)'
+        moduleName: '$(moduleName)'
         moduleVersion: '$(moduleVersion)'
         packages:
         - id: Microsoft.IdentityModel.Clients.ActiveDirectory
@@ -65,7 +74,7 @@ stages:
       artifact: '$(artifactName)'
     - template: template-psmodule-sign.yml
       parameters:
-        moduleName: '$[ dependencies.Build.outputs[''ModuleParameters.moduleName''] ]'
+        moduleName: '$[ dependencies.Prepare.outputs[''ModuleParameters.moduleName''] ]'
 
 - stage: Test
   dependsOn: Build
