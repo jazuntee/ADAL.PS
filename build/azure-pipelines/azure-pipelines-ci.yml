@@ -54,8 +54,8 @@ stages:
       #moduleVersion.Prefix: '$[ dependencies.Prepare.outputs[''ModuleParameters.moduleVersion''] ]'
       moduleVersion.Prefix: '$[ dependencies.Prepare.outputs[''ModuleParameters.version.Microsoft.IdentityModel.Clients.ActiveDirectory''] ]'
       moduleVersion.Revision: '$[ counter(variables[''moduleVersion.Prefix''], 1) ]'
-      moduleVersionFull: '$[ format(''{0}.{1}'', variables[''moduleVersion.Prefix''], variables[''moduleVersion.Revision'']) ]'
-      moduleVersion: '$[ coalesce(variables[''moduleVersionFull''], variables[''moduleVersion.Prefix''], '''') ]'
+      moduleVersion: '$[ coalesce(variables[''moduleVersion.Prefix''], format(''{0}.{1}'', variables[''moduleVersion.Prefix''], variables[''moduleVersion.Revision'']), '''') ]'
+      #moduleVersion: '$[ coalesce(variables[''moduleVersionFull''], variables[''moduleVersion.Prefix''], '''') ]'
       version.Microsoft.IdentityModel.Clients.ActiveDirectory: '$[ dependencies.Prepare.outputs[''ModuleParameters.version.Microsoft.IdentityModel.Clients.ActiveDirectory''] ]'
     steps:
     - template: template-psmodule-build.yml
