@@ -65,7 +65,7 @@ stages:
       artifact: '$(artifactName)'
     - template: template-psmodule-sign.yml
       parameters:
-        moduleName: $[ dependencies.Build.outputs['ModuleParameters.moduleName'] ]
+        moduleName: '$[ dependencies.Build.outputs[''ModuleParameters.moduleName''] ]'
 
 - stage: Test
   dependsOn: Build
