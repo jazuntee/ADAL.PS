@@ -23,10 +23,10 @@ trigger:
 pr: none
 
 variables:
-  #moduleName: 'ADAL.PS'
+  moduleName: 'ADAL.PS'
   #moduleVersion.MajorMinorBuild: '5.2.7' # Manually adjust the version number as needed for semantic versioning.
-  #moduleVersion.Revision: '$[counter(variables.moduleVersion.MajorMinorBuild, 1)]' # Revision is auto-incremented.
-  #moduleVersion: '$(moduleVersion.MajorMinorBuild).$(moduleVersion.Revision)'
+  moduleVersion.Revision: '$[counter(variables.moduleVersion.MajorMinorBuild, 1)]' # Revision is auto-incremented.
+  moduleVersion: '$(moduleVersion.MajorMinorBuild).$(moduleVersion.Revision)'
   vmImage: '${{ parameters.vmImage }}'
   artifactName: 'PSModule'
   package: 'Microsoft.IdentityModel.Clients.ActiveDirectory'
@@ -48,6 +48,7 @@ stages:
         filePath: '$(System.DefaultWorkingDirectory)/build/Get-PipelineParameters.ps1'
         arguments: '-ModuleManifestPath "$(Build.SourcesDirectory)/src/*.psd1" -PackagesConfigPath "$(Build.SourcesDirectory)/packages.config"'
         pwsh: true
+
   - job: Build
     dependsOn: Prepare
     variables: 
@@ -56,7 +57,6 @@ stages:
       moduleVersion: '$[ format(''{0}.{1}'', dependencies.Prepare.outputs[''ModuleParameters.moduleVersion''], variables[''moduleVersion.Revision'']) ]'
       version.Microsoft.IdentityModel.Clients.ActiveDirectory: '$[ dependencies.Prepare.outputs[''ModuleParameters.version.Microsoft.IdentityModel.Clients.ActiveDirectory''] ]'
     steps:
-    
     - template: template-psmodule-build.yml
       parameters:
         moduleName: '$(moduleName)'
