@@ -38,9 +38,9 @@ steps:
     archiveFile: '$(Build.ArtifactStagingDirectory)/${{ parameters.artifactName }}/${{ parameters.moduleName }}_${{ parameters.moduleVersion }}.zip'
     replaceExistingArchive: true
 
-- task: PublishBuildArtifacts@1
+- task: PublishPipelineArtifact@1
   displayName: 'Publish PowerShell Module Package Artifact'
   inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)/${{ parameters.artifactName }}/${{ parameters.moduleName }}_${{ parameters.moduleVersion }}.zip'
-    ArtifactName: '${{ parameters.artifactNamePackage }}'
-    publishLocation: 'Container'
+    targetPath: '$(Build.ArtifactStagingDirectory)/${{ parameters.artifactName }}/${{ parameters.moduleName }}_${{ parameters.moduleVersion }}.zip'
+    artifact: '${{ parameters.artifactNamePackage }}'
+    publishLocation: 'pipeline'
