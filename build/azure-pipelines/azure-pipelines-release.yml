@@ -1,0 +1,113 @@
+# Release Pipeline
+# https://aka.ms/yaml
+
+parameters:
+  - name: vmImage
+    displayName: "Pool Image"
+    type: string
+    default: windows-latest
+    values:
+      - windows-latest
+      - ubuntu-latest
+      - macOS-latest
+
+trigger: none
+#  batch: true
+#  branches:
+#    include:
+#    - master
+#  paths:
+#    include:
+#    - src/*
+
+pr: none
+
+variables:
+  moduleVersion.MajorMinorBuild: "5.2.7" # Manually adjust the version number as needed for semantic versioning.
+  moduleVersion.Revision: "$[counter(variables.moduleVersion.MajorMinorBuild, 1)]" # Revision is auto-incremented.
+  moduleVersion: "$(moduleVersion.MajorMinorBuild).$(moduleVersion.Revision)"
+  vmImage: "${{ parameters.vmImage }}"
+  artifactName: "PSModule"
+
+pool:
+  vmImage: $(vmImage)
+
+stages:
+  - stage: Build
+    jobs:
+      - job: BuildProcess
+        steps:
+          - template: template-psmodule-build.yml
+            parameters:
+              moduleName: "ADAL.PS"
+              moduleVersion: "$(moduleVersion)"
+              packages:
+                - id: Microsoft.IdentityModel.Clients.ActiveDirectory
+                  version: 5.2.7
+                  targetFramework: [net45]
+
+  - stage: Sign
+    dependsOn: Build
+    displayName: "Code Signing"
+    jobs:
+      - deployment: Sign
+        environment: Standalone
+        pool:
+          vmImage: "windows-latest"
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - template: template-psmodule-sign.yml
+                  parameters:
+                    moduleName: "ADAL.PS"
+                    #pipelineId: 'CI'
+                    #artifactName: '$(artifactName)'
+
+  - stage: Package
+    displayName: "Standalone Package"
+    dependsOn: Sign
+    jobs:
+      - deployment: Package
+        environment: Standalone
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - template: template-psmodule-package.yml
+                  parameters:
+                    moduleName: "ADAL.PS"
+                    moduleVersion: "$(moduleVersion)"
+                    #artifactName: '$(artifactName)Signed'
+
+  - stage: Test
+    dependsOn: Sign
+    jobs:
+      - deployment: Publish
+        environment: Test
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - template: template-psmodule-publish.yml
+                  parameters:
+                    moduleName: "ADAL.PS"
+                    #artifactName: '$(artifactName)Signed'
+                    RepositorySourceLocation: "https://www.poshtestgallery.com/api/v2"
+                    NuGetApiKeySecretName: "PSTestGallery-API-Key"
+
+  - stage: Production
+    dependsOn: Test
+    jobs:
+      - deployment: Publish
+        environment: Production
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - template: template-psmodule-publish.yml
+                  parameters:
+                    moduleName: "ADAL.PS"
+                    #artifactName: '$(artifactName)Signed'
+                    RepositorySourceLocation: "https://www.poshtestgallery.com/api/v2"
+                    NuGetApiKeySecretName: "PSTestGallery-API-Key"
