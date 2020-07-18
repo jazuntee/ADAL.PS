@@ -14,7 +14,7 @@ parameters:
   - id: Microsoft.IdentityModel.Clients.ActiveDirectory
     version: 5.2.7
     targetFramework: [net45]
-- name: artifactName
+- name: artifactOutput
   type: string
   default: 'PSModule'
 
@@ -24,20 +24,20 @@ steps:
   inputs:
     SourceFolder: './src'
     Contents: '**'
-    TargetFolder: '$(Build.ArtifactStagingDirectory)/${{ parameters.artifactName }}/${{ parameters.moduleName }}'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)/${{ parameters.artifactOutput }}/${{ parameters.moduleName }}'
     preserveTimestamp: true
 
 - task: CopyFiles@2
   displayName: 'Copy LICENSE to Staging'
   inputs:
     Contents: 'LICENSE'
-    TargetFolder: '$(Build.ArtifactStagingDirectory)/${{ parameters.artifactName }}/${{ parameters.moduleName }}'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)/${{ parameters.artifactOutput }}/${{ parameters.moduleName }}'
     preserveTimestamp: true
 
 - pwsh: 'Rename-Item "$env:StagingDirectory/$env:ModuleName/LICENSE" -NewName "License.txt"'
   displayName: 'Stage License.txt'
   env:
-    StagingDirectory: '$(Build.ArtifactStagingDirectory)/${{ parameters.artifactName }}'
+    StagingDirectory: '$(Build.ArtifactStagingDirectory)/${{ parameters.artifactOutput }}'
     ModuleName: '${{ parameters.moduleName }}'
 
 - task: NuGetCommand@2
@@ -56,19 +56,19 @@ steps:
       inputs:
         SourceFolder: './packages/${{ package.id }}.${{ package.version }}/lib/${{ targetFramework }}'
         Contents: '**'
-        TargetFolder: '$(Build.ArtifactStagingDirectory)/${{ parameters.artifactName }}/${{ parameters.moduleName }}/${{ package.id }}.${{ package.version }}/${{ targetFramework }}'
+        TargetFolder: '$(Build.ArtifactStagingDirectory)/${{ parameters.artifactOutput }}/${{ parameters.moduleName }}/${{ package.id }}.${{ package.version }}/${{ targetFramework }}'
         preserveTimestamp: true
 
 - task: PowerShell@2
   displayName: 'Update PowerShell Module Manifest'
   inputs:
     filePath: './build/Update-PSModuleManifest.ps1'
-    arguments: '-ModuleManifestPath "$(Build.ArtifactStagingDirectory)/${{ parameters.artifactName }}/${{ parameters.moduleName }}/${{ parameters.moduleName }}.psd1" -ModuleVersion "${{ parameters.moduleVersion }}"'
+    arguments: '-ModuleManifestPath "$(Build.ArtifactStagingDirectory)/${{ parameters.artifactOutput }}/${{ parameters.moduleName }}/${{ parameters.moduleName }}.psd1" -ModuleVersion "${{ parameters.moduleVersion }}"'
     pwsh: true
 
 - task: PublishPipelineArtifact@1
   displayName: 'Publish PowerShell Module Artifact'
   inputs:
-    targetPath: '$(Build.ArtifactStagingDirectory)/${{ parameters.artifactName }}'
-    artifact: '${{ parameters.artifactName }}'
+    targetPath: '$(Build.ArtifactStagingDirectory)/${{ parameters.artifactOutput }}'
+    artifact: '${{ parameters.artifactOutput }}'
     publishLocation: 'pipeline'
