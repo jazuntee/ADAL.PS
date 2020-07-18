@@ -24,15 +24,14 @@ pr: none
 
 variables:
   moduleName: 'ADAL.PS'
-  #moduleVersion.MajorMinorBuild: '5.2.7' # Manually adjust the version number as needed for semantic versioning.
-  moduleVersion.Revision: '$[counter(variables.moduleVersion.MajorMinorBuild, 1)]' # Revision is auto-incremented.
-  moduleVersion: '$(moduleVersion.MajorMinorBuild).$(moduleVersion.Revision)'
+  moduleVersion.Revision: '$[counter(variables.moduleVersion, 1)]' # Revision is auto-incremented.
+  moduleVersion: '$(moduleVersion).$(moduleVersion.Revision)'
   vmImage: '${{ parameters.vmImage }}'
   artifactName: 'PSModule'
   package: 'Microsoft.IdentityModel.Clients.ActiveDirectory'
 
 pool:
-  vmImage: $(vmImage)
+  vmImage: ${{ parameters.vmImage }}
 
 stages:
 - stage: Build
@@ -69,6 +68,7 @@ stages:
   - job: Sign
     dependsOn: Build
     variables:
+      moduleName: '$[ dependencies.Prepare.outputs[''ModuleParameters.moduleName''] ]'
       skipComponentGovernanceDetection: true
     pool:
       vmImage: 'windows-latest'
@@ -77,7 +77,7 @@ stages:
       artifact: '$(artifactName)'
     - template: template-psmodule-sign.yml
       parameters:
-        moduleName: '$[ dependencies.Prepare.outputs[''ModuleParameters.moduleName''] ]'
+        moduleName: '$(moduleName)'
 
 - stage: Test
   dependsOn: Build
