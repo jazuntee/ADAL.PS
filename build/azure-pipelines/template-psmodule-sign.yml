@@ -8,9 +8,12 @@ parameters:
 - name: pipelineId
   type: string
   default:
-- name: artifactName
+- name: artifactInput
   type: string
   default: 'PSModule'
+- name: artifactOutput
+  type: string
+  default: 'PSModuleSigned'
 
 steps:
 #- download: none
@@ -24,14 +27,16 @@ steps:
 #    downloadPath: '$(Build.ArtifactStagingDirectory)'
 
 - task: CopyFiles@2
+  displayName: 'Copy PowerShell Module to Staging'
   inputs:
-    SourceFolder: '$(Pipeline.Workspace)/${{ parameters.pipelineId }}/${{ parameters.artifactName }}'
+    SourceFolder: '$(Pipeline.Workspace)/${{ parameters.pipelineId }}/${{ parameters.artifactInput }}'
     Contents: '**'
-    TargetFolder: '$(Build.ArtifactStagingDirectory)/${{ parameters.artifactName }}'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)/${{ parameters.artifactOutput }}'
     CleanTargetFolder: true
     preserveTimestamp: true
 
 - task: AzureKeyVault@1
+  displayName: 'Download Code Signing Certificate'
   inputs:
     azureSubscription: 'GTP - Jason Thompson(49945a1a-9e37-4522-bb4b-f71fa2deeec6)'
     KeyVaultName: 'JasothPublic'
@@ -42,12 +47,12 @@ steps:
   displayName: 'Sign PowerShell Module Files'
   inputs:
     filePath: '$(System.DefaultWorkingDirectory)/build/Sign-PSModule.ps1'
-    arguments: '-ModuleDirectory "$(Build.ArtifactStagingDirectory)/${{ parameters.artifactName }}/${{ parameters.moduleName }}" -SigningCertificate "$(Jason-Thompson)"'
+    arguments: '-ModuleDirectory "$(Build.ArtifactStagingDirectory)/${{ parameters.artifactOutput }}/${{ parameters.moduleName }}" -SigningCertificate "$(Jason-Thompson)"'
     pwsh: true
 
 - task: PublishPipelineArtifact@1
   displayName: 'Publish PowerShell Module Artifact'
   inputs:
-    targetPath: '$(Build.ArtifactStagingDirectory)/${{ parameters.artifactName }}'
-    artifact: '${{ parameters.artifactName }}Signed'
+    targetPath: '$(Build.ArtifactStagingDirectory)/${{ parameters.artifactOutput }}'
+    artifact: '${{ parameters.artifactOutput }}'
     publishLocation: 'pipeline'
