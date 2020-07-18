@@ -10,7 +10,7 @@
 RootModule = 'ADAL.PS.psm1'
 
 # Version number of this module.
-ModuleVersion = '5.2.7.1'
+ModuleVersion = '5.2.7'
 
 # ID used to uniquely identify this module
 GUID = '2d417b96-5b7c-4e1b-b183-1ec4bce19746'
@@ -108,7 +108,7 @@ AliasesToExport = @()
 PrivateData = @{
     PSData = @{
         # Tags applied to this module. These help with module discovery in online galleries.
-        Tags = 'Microsoft', 'Identity', 'Azure', 'AzureActiveDirectory', 'AzureAD', 'AAD', 'ActiveDirectory', 'AD', 'Microsoft.IdentityModel.Clients.ActiveDirectory', 'ActiveDirectoryAuthenticationLibrary', 'ADAL', 'OAuth', 'OpenIdConnect', 'OIDC'
+        Tags = 'PSEdition_Desktop', 'Windows', 'Microsoft', 'Identity', 'Azure', 'AzureActiveDirectory', 'AzureAD', 'AAD', 'ActiveDirectory', 'AD', 'Microsoft.IdentityModel.Clients.ActiveDirectory', 'ActiveDirectoryAuthenticationLibrary', 'ADAL', 'OAuth', 'OpenIdConnect', 'OIDC'
 
         # A URL to the license for this module.
         LicenseUri = 'https://raw.githubusercontent.com/jasoth/ADAL.PS/master/LICENSE'
