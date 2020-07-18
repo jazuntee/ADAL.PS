@@ -40,8 +40,9 @@ pool:
 
 stages:
 - stage: Sign
+  displayName: 'Code Signing'
   jobs: 
-  - deployment: SignProcess
+  - deployment: Sign
     environment: Standalone
     pool:
       vmImage: 'windows-latest'
@@ -55,10 +56,11 @@ stages:
               pipelineId: 'CI'
               #artifactName: '$(artifactName)'
 
-- stage: Deploy
+- stage: Package
+  displayName: 'Standalone Package'
   dependsOn: Sign
   jobs: 
-  - deployment: PackageProcess
+  - deployment: Package
     environment: Standalone
     strategy:
       runOnce:
