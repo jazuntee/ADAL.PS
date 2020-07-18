@@ -41,6 +41,7 @@ stages:
     #displayName: '${{ variables.moduleVersion.MajorMinorBuild }}'
     steps:
     - task: PowerShell@2
+      name: MyParams
       displayName: 'Get Parameters for PowerShell Module'
       inputs:
         filePath: '$(System.DefaultWorkingDirectory)/build/Get-PipelineParameters.ps1'
@@ -48,7 +49,7 @@ stages:
         pwsh: true
     - template: template-psmodule-build.yml
       parameters:
-        moduleName: '$(moduleName2)'
+        moduleName: '$(MyParams.moduleName2)'
         moduleVersion: '$(moduleVersion)'
         packages:
         - id: $(package)
