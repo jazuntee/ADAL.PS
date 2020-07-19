@@ -30,9 +30,9 @@ pr: none
 
 variables:
   moduleName: 'ADAL.PS'
-  moduleVersion.MajorMinorBuild: '5.2.7' # Manually adjust the version number as needed for semantic versioning.
-  moduleVersion.Revision: '$[counter(variables.moduleVersion.MajorMinorBuild, 1)]' # Revision is auto-incremented.
-  moduleVersion: '$(moduleVersion.MajorMinorBuild).$(moduleVersion.Revision)'
+  #moduleVersion.MajorMinorBuild: '5.2.7' # Manually adjust the version number as needed for semantic versioning.
+  #moduleVersion.Revision: '$[counter(variables.moduleVersion.MajorMinorBuild, 1)]' # Revision is auto-incremented.
+  #moduleVersion: '$(moduleVersion.MajorMinorBuild).$(moduleVersion.Revision)'
   vmImage: '${{ parameters.vmImage }}'
   artifactModule: 'PSModule'
   artifactModuleSigned: 'PSModuleSigned'
@@ -62,6 +62,7 @@ stages:
         pwsh: true
 
   - job: Build
+    displayName: 'Update Build'
     dependsOn: Prepare
     variables:
       moduleName: '$[ dependencies.Prepare.outputs[''ModuleParameters.moduleName''] ]'
@@ -70,11 +71,13 @@ stages:
       moduleVersion: '$[ coalesce(variables[''moduleVersionOverride''], format(''{0}.{1}'', variables[''moduleVersion.Prefix''], variables[''moduleVersion.Revision''])) ]'
       skipComponentGovernanceDetection: true
     steps:
+    - download: CI
+      artifact: '$(artifactModule)'
     - task: PowerShell@2
       displayName: 'Update PowerShell Module Manifest'
       inputs:
         filePath: '$(System.DefaultWorkingDirectory)/build/Update-PSModuleManifest.ps1'
-        arguments: '-ModuleManifestPath "$(Pipeline.Workspace)/$(artifactModule)/$(moduleName)/$(moduleName).psd1" -ModuleVersion "$(moduleVersion)"'
+        arguments: '-ModuleManifestPath "$(Pipeline.Workspace)/CI/$(artifactModule)/$(moduleName)/$(moduleName).psd1" -ModuleVersion "$(moduleVersion)"'
         pwsh: true
     - task: PublishPipelineArtifact@1
       displayName: 'Publish PowerShell Module Artifact'
