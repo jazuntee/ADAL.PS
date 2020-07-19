@@ -43,7 +43,7 @@ steps:
   displayName: 'Sign PowerShell Module Files'
   inputs:
     filePath: '$(System.DefaultWorkingDirectory)/build/Sign-PSModule.ps1'
-    arguments: '-ModuleDirectory "$(Pipeline.Workspace)/${{ parameters.artifactOutput }}/**" -SigningCertificate "$(${{ parameters.SigningCertificateSecretName }})"'
+    arguments: '-ModuleDirectory "$(Pipeline.Workspace)/${{ parameters.artifactOutput }}/*" -SigningCertificate "$(${{ parameters.SigningCertificateSecretName }})"'
     pwsh: true
 
 - task: PublishPipelineArtifact@1
