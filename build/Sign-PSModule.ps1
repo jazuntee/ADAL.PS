@@ -2,11 +2,11 @@
 param
 (
     # Path to Module Root Directory
-    [Parameter(Mandatory = $true)]
-    [string] $ModuleDirectory,
+    [Parameter(Mandatory = $false)]
+    [string] $ModuleDirectory = "..\build\release\*\*",
     # Specifies the certificate that will be used to sign the script or file.
-    [Parameter(Mandatory = $true)]
-    [object] $SigningCertificate,
+    [Parameter(Mandatory = $false)]
+    [object] $SigningCertificate = (Get-ChildItem Cert:\CurrentUser\My\E7413D745138A6DC584530AECE27CEFDDA9D9CD6),
     # Uses the specified time stamp server to add a time stamp to the signature.
     [Parameter(Mandatory = $false)]
     [string] $TimestampServer = 'http://timestamp.digicert.com'
