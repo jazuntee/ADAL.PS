@@ -44,7 +44,7 @@ stages:
   displayName: 'Code Signing'
   jobs: 
   - job: Sign
-    displayName: 'Sign ${{ variables.moduleVersion }}'
+    displayName: 'Sign ${{ variables[''moduleVersion.Revision''] }}'
     variables:
       #moduleName: '$[ dependencies.Prepare.outputs[''ModuleParameters.moduleName''] ]'
       skipComponentGovernanceDetection: true
