@@ -42,7 +42,8 @@ pool:
   vmImage: $(vmImage)
 
 stages:
-- stage: FinalizeBuild
+- stage: Build
+  displayName: 'Finalize Build'
   jobs: 
   - job: Prepare
     variables:
@@ -101,7 +102,7 @@ stages:
 
 - stage: Package
   displayName: 'Standalone Package'
-  dependsOn: FinalizeBuild
+  dependsOn: Build
   jobs: 
   - job: Prepare
     variables:
@@ -128,8 +129,9 @@ stages:
               moduleName: '$(ModuleParameters.moduleName)'
               moduleVersion: '$(ModuleParameters.moduleVersion)'
 
-- stage: Test
-  dependsOn: FinalizeBuild
+- stage: DeployTest
+  displayName: 'Deploy to Test'
+  dependsOn: Build
   jobs: 
   - deployment: Publish
     environment: Test
@@ -144,7 +146,8 @@ stages:
               NuGetApiKeySecretName: 'PSTestGallery-API-Key'
 
 - stage: Production
-  dependsOn: FinalizeBuild
+  displayName: 'Deploy to Production'
+  dependsOn: Build
   jobs: 
   - deployment: Publish
     environment: Production
