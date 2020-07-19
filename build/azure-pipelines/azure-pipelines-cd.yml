@@ -134,6 +134,30 @@ stages:
               moduleName: '$(moduleName)'
               moduleVersion: '$(moduleVersion)'
 
+  - deployment: Release
+    dependsOn:
+    - Prepare
+    - Package
+    environment: Production
+    variables:
+      moduleName: '$[ dependencies.Prepare.outputs[''ModuleInfo.moduleName''] ]'
+      moduleVersion: '$[ dependencies.Prepare.outputs[''ModuleInfo.moduleVersion''] ]'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: GitHubRelease@1
+            inputs:
+              gitHubConnection: 'GitHub jasoth'
+              repositoryName: '$(Build.Repository.Name)'
+              action: 'create'
+              #target: '$(Build.SourceVersion)'
+              tagSource: 'userSpecifiedTag'
+              tag: 'v$(moduleVersion)'
+              title: '$(moduleName) v$(moduleVersion)'
+              assets: '$(Pipeline.Workspace)/$(artifactModulePackage)/*'
+              addChangeLog: false
+
 - stage: DeployTest
   displayName: 'Deploy to Test'
   dependsOn: Build
