@@ -25,7 +25,9 @@ pr: none
 variables:
   moduleName: 'ADAL.PS'
   vmImage: '${{ parameters.vmImage }}'
-  artifactName: 'PSModule'
+  artifactModule: 'PSModule'
+  #artifactModuleSigned: 'PSModuleSigned'
+  #artifactModulePackage: 'PSModulePackage'
 
 pool:
   vmImage: $(vmImage)
@@ -75,7 +77,7 @@ stages:
       vmImage: 'windows-latest'
     steps:
     - download: current
-      artifact: '$(artifactName)'
+      artifact: '$(artifactModule)'
     - template: template-psmodule-sign.yml
       parameters:
         moduleName: '$(moduleName)'
