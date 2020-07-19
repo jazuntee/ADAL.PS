@@ -43,19 +43,20 @@ stages:
 - stage: Sign
   displayName: 'Code Signing'
   jobs: 
-  - deployment: Sign
-    displayName: 'Sign $(moduleVersion)'
-    environment: Standalone
+  - job: Sign
+    displayName: 'Sign ${{ variables.moduleVersion }}'
+    variables:
+      #moduleName: '$[ dependencies.Prepare.outputs[''ModuleParameters.moduleName''] ]'
+      skipComponentGovernanceDetection: true
     pool:
       vmImage: 'windows-latest'
-    strategy:
-      runOnce:
-        deploy:
-          steps:
-          - template: template-psmodule-sign.yml
-            parameters:
-              moduleName: '$(moduleName)'
-              pipelineId: 'CI'
+    steps:
+    - download: current
+      artifact: '$(artifactName)'
+    - template: template-psmodule-sign.yml
+      parameters:
+        moduleName: '$(moduleName)'
+        pipelineId: 'CI'
 
 - stage: Package
   displayName: 'Standalone Package'
