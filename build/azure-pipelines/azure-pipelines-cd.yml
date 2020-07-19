@@ -30,9 +30,9 @@ pr: none
 
 variables:
   moduleName: 'ADAL.PS'
-  moduleVersion.MajorMinorBuild: '5.2.7' # Manually adjust the version number as needed for semantic versioning.
-  moduleVersion.Revision: '$[counter(variables.moduleVersion.MajorMinorBuild, 1)]' # Revision is auto-incremented.
-  moduleVersion: '$(moduleVersion.MajorMinorBuild).$(moduleVersion.Revision)'
+  #moduleVersion.MajorMinorBuild: '5.2.7' # Manually adjust the version number as needed for semantic versioning.
+  #moduleVersion.Revision: '$[counter(variables.moduleVersion.MajorMinorBuild, 1)]' # Revision is auto-incremented.
+  #moduleVersion: '$(moduleVersion.MajorMinorBuild).$(moduleVersion.Revision)'
   vmImage: '${{ parameters.vmImage }}'
   artifactModule: 'PSModule'
   artifactModuleSigned: 'PSModuleSigned'
@@ -42,18 +42,19 @@ pool:
   vmImage: $(vmImage)
 
 stages:
-- stage: FinalizeBuild
+- stage: Build
+  displayName: 'Finalize Build'
   jobs: 
   - job: Prepare
     variables:
-      #moduleVersion.Prefix: '$[ dependencies.Prepare.outputs[''ModuleParameters.version.Microsoft.IdentityModel.Clients.ActiveDirectory''] ]'
+      #moduleVersion.Prefix: '$[ dependencies.Prepare.outputs[''ModuleInfo.version.Microsoft.IdentityModel.Clients.ActiveDirectory''] ]'
       skipComponentGovernanceDetection: true
     steps:
     #- checkout: none
     - download: CI
       artifact: '$(artifactModule)'
     - task: PowerShell@2
-      name: ModuleParameters
+      name: ModuleInfo
       displayName: 'Get Parameters for PowerShell Module'
       inputs:
         filePath: '$(System.DefaultWorkingDirectory)/build/Get-PSModuleInfo.ps1'
@@ -61,14 +62,24 @@ stages:
         pwsh: true
 
   - job: Build
+    displayName: 'Update Build'
     dependsOn: Prepare
     variables:
-      moduleName: '$[ dependencies.Prepare.outputs[''ModuleParameters.moduleName''] ]'
-      moduleVersion.Prefix: '$[ dependencies.Prepare.outputs[''ModuleParameters.moduleVersion''] ]'
+      moduleName: '$[ dependencies.Prepare.outputs[''ModuleInfo.moduleName''] ]'
+      moduleVersion.Prefix: '$[ dependencies.Prepare.outputs[''ModuleInfo.moduleVersion''] ]'
       moduleVersion.Revision: '$[ counter(variables[''moduleVersion.Prefix''], 1) ]'
       moduleVersion: '$[ coalesce(variables[''moduleVersionOverride''], format(''{0}.{1}'', variables[''moduleVersion.Prefix''], variables[''moduleVersion.Revision''])) ]'
       skipComponentGovernanceDetection: true
     steps:
+    - download: CI
+      artifact: '$(artifactModule)'
+    - task: CopyFiles@2
+      displayName: 'Copy Source to Staging'
+      inputs:
+        SourceFolder: '$(Pipeline.Workspace)/CI/$(artifactModule)'
+        Contents: '**'
+        TargetFolder: '$(Pipeline.Workspace)/$(artifactModule)'
+        preserveTimestamp: true
     - task: PowerShell@2
       displayName: 'Update PowerShell Module Manifest'
       inputs:
@@ -87,7 +98,7 @@ stages:
     - Prepare
     - Build
     variables:
-      moduleName: '$[ dependencies.Prepare.outputs[''ModuleParameters.moduleName''] ]'
+      moduleName: '$[ dependencies.Prepare.outputs[''ModuleInfo.moduleName''] ]'
       skipComponentGovernanceDetection: true
     pool:
       vmImage: 'windows-latest'
@@ -101,7 +112,7 @@ stages:
 
 - stage: Package
   displayName: 'Standalone Package'
-  dependsOn: FinalizeBuild
+  dependsOn: Build
   jobs: 
   - job: Prepare
     variables:
@@ -110,7 +121,7 @@ stages:
     - download: current
       artifact: '$(artifactModuleSigned)'
     - task: PowerShell@2
-      name: ModuleParameters
+      name: ModuleInfo
       displayName: 'Get Parameters for PowerShell Module'
       inputs:
         filePath: '$(System.DefaultWorkingDirectory)/build/Get-PSModuleInfo.ps1'
@@ -118,18 +129,23 @@ stages:
         pwsh: true
 
   - deployment: Package
+    dependsOn: Prepare
     environment: Standalone
+    variables:
+      moduleName: '$[ dependencies.Prepare.outputs[''ModuleInfo.moduleName''] ]'
+      moduleVersion: '$[ dependencies.Prepare.outputs[''ModuleInfo.moduleVersion''] ]'
     strategy:
       runOnce:
         deploy:
           steps:
           - template: template-psmodule-package.yml
             parameters:
-              moduleName: '$(ModuleParameters.moduleName)'
-              moduleVersion: '$(ModuleParameters.moduleVersion)'
+              moduleName: '$(moduleName)'
+              moduleVersion: '$(moduleVersion)'
 
-- stage: Test
-  dependsOn: FinalizeBuild
+- stage: DeployTest
+  displayName: 'Deploy to Test'
+  dependsOn: Build
   jobs: 
   - deployment: Publish
     environment: Test
@@ -142,9 +158,11 @@ stages:
               moduleName: '$(moduleName)'
               RepositorySourceLocation: 'https://www.poshtestgallery.com/api/v2'
               NuGetApiKeySecretName: 'PSTestGallery-API-Key'
+              Unlist: true
 
 - stage: Production
-  dependsOn: FinalizeBuild
+  displayName: 'Deploy to Production'
+  dependsOn: Build
   jobs: 
   - deployment: Publish
     environment: Production
