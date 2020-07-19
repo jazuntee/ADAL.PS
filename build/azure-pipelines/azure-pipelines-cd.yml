@@ -217,15 +217,15 @@ stages:
           - template: template-psmodule-publish.yml
             parameters:
               moduleName: '$(moduleName)'
-              RepositorySourceLocation: 'https://www.poshtestgallery.com/api/v2'
-              NuGetApiKeySecretName: 'PSTestGallery-API-Key'
+              RepositorySourceLocation: 'https://www.powershellgallery.com/api/v2'
+              NuGetApiKeySecretName: 'PSGallery-API-Key'
           - task: GitHubRelease@1
             displayName: 'Create Release on GitHub'
             inputs:
               gitHubConnection: 'GitHub jasoth'
               repositoryName: '$(Build.Repository.Name)'
               action: 'create'
-              #target: '$(Build.SourceVersion)'
+              target: '$(Build.SourceVersion)'
               tagSource: 'userSpecifiedTag'
               tag: 'v$(moduleVersion)'
               title: '$(moduleName) v$(moduleVersion)'
