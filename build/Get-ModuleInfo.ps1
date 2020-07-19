@@ -2,7 +2,7 @@ param
 (
     #
     [parameter(Mandatory = $false)]
-    [string] $ModuleManifestPath = "..\src\*.psm1",
+    [string] $ModuleManifestPath = "..\src",
     #
     [parameter(Mandatory = $false)]
     [string] $PackagesConfigPath = "..\"
@@ -12,7 +12,7 @@ param
 Import-Module "$PSScriptRoot\CommonFunctions.psm1" -Force -WarningAction SilentlyContinue -ErrorAction Stop
 
 [System.IO.FileInfo] $ModuleManifestFileInfo = Get-PathInfo $ModuleManifestPath -DefaultFilename "*.psd1" -ErrorAction Stop
-[System.IO.FileInfo] $PackagesConfigFileInfo = Get-PathInfo $PackagesConfigPath -DefaultFilename "packages.config" -ErrorAction Stop
+[System.IO.FileInfo] $PackagesConfigFileInfo = Get-PathInfo $PackagesConfigPath -DefaultFilename "packages.config"
 
 ## Read Module Manifest
 $ModuleManifest = Import-PowerShellDataFile $ModuleManifestFileInfo.FullName -ErrorAction Stop
@@ -24,10 +24,12 @@ Write-Host ('##vso[task.setvariable variable=moduleVersion;isOutput=true]{0}' -f
 Write-Host ('##[debug] {0} = {1}' -f 'moduleVersion', $ModuleManifest.ModuleVersion)
 
 ## Read Packages Configuration
-$xmlPackagesConfig = New-Object xml
-$xmlPackagesConfig.Load($PackagesConfigFileInfo.FullName)
+if ($PackagesConfigFileInfo.Exists) {
+    $xmlPackagesConfig = New-Object xml
+    $xmlPackagesConfig.Load($PackagesConfigFileInfo.FullName)
 
-foreach ($package in $xmlPackagesConfig.packages.package) {
-    Write-Host ('##vso[task.setvariable variable=version.{0};isOutput=true]{1}' -f $package.id, $package.version)
-    Write-Host ('##[debug] version.{0} = {1}' -f $package.id, $package.version)
+    foreach ($package in $xmlPackagesConfig.packages.package) {
+        Write-Host ('##vso[task.setvariable variable=version.{0};isOutput=true]{1}' -f $package.id, $package.version)
+        Write-Host ('##[debug] version.{0} = {1}' -f $package.id, $package.version)
+    }
 }
