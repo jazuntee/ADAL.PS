@@ -136,10 +136,29 @@ stages:
 
 - stage: DeployTest
   displayName: 'Deploy to Test'
-  dependsOn: Build
+  dependsOn:
+  - Build
+  - Package
   jobs: 
+  - job: Prepare
+    variables:
+      skipComponentGovernanceDetection: true
+    steps:
+    - download: current
+      artifact: '$(artifactModuleSigned)'
+    - task: PowerShell@2
+      name: ModuleInfo
+      displayName: 'Get Parameters for PowerShell Module'
+      inputs:
+        filePath: '$(System.DefaultWorkingDirectory)/build/Get-PSModuleInfo.ps1'
+        arguments: '-ModuleManifestPath "$(Pipeline.Workspace)/$(artifactModuleSigned)/*/*.psd1"'
+        pwsh: true
+
   - deployment: Publish
     environment: Test
+    variables:
+      moduleName: '$[ dependencies.Prepare.outputs[''ModuleInfo.moduleName''] ]'
+      moduleVersion: '$[ dependencies.Prepare.outputs[''ModuleInfo.moduleVersion''] ]'
     strategy:
       runOnce:
         deploy:
@@ -150,6 +169,19 @@ stages:
               RepositorySourceLocation: 'https://www.poshtestgallery.com/api/v2'
               NuGetApiKeySecretName: 'PSTestGallery-API-Key'
               Unlist: true
+          - task: GitHubRelease@1
+            displayName: 'Create Release on GitHub'
+            inputs:
+              gitHubConnection: 'GitHub jasoth'
+              repositoryName: '$(Build.Repository.Name)'
+              action: 'create'
+              target: '$(Build.SourceVersion)'
+              tagSource: 'userSpecifiedTag'
+              tag: 'v$(moduleVersion)'
+              title: '$(moduleName) v$(moduleVersion)'
+              assets: '$(Pipeline.Workspace)/$(artifactModulePackage)/*'
+              isDraft: true
+              addChangeLog: false
 
 - stage: Production
   displayName: 'Deploy to Production'
