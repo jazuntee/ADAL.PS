@@ -73,11 +73,18 @@ stages:
     steps:
     - download: CI
       artifact: '$(artifactModule)'
+    - task: CopyFiles@2
+      displayName: 'Copy Source to Staging'
+      inputs:
+        SourceFolder: '$(Pipeline.Workspace)/CI/$(artifactModule)'
+        Contents: '**'
+        TargetFolder: '$(Pipeline.Workspace)/$(artifactModule)'
+        preserveTimestamp: true
     - task: PowerShell@2
       displayName: 'Update PowerShell Module Manifest'
       inputs:
         filePath: '$(System.DefaultWorkingDirectory)/build/Update-PSModuleManifest.ps1'
-        arguments: '-ModuleManifestPath "$(Pipeline.Workspace)/CI/$(artifactModule)/$(moduleName)/$(moduleName).psd1" -ModuleVersion "$(moduleVersion)"'
+        arguments: '-ModuleManifestPath "$(Pipeline.Workspace)/$(artifactModule)/$(moduleName)/$(moduleName).psd1" -ModuleVersion "$(moduleVersion)"'
         pwsh: true
     - task: PublishPipelineArtifact@1
       displayName: 'Publish PowerShell Module Artifact'
