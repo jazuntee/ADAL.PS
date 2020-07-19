@@ -22,25 +22,18 @@ steps:
 #- download: current
 #  artifact: '${{ parameters.artifactName }}'
 
-#- task: DownloadBuildArtifacts@0
-#  inputs:
-#    buildType: 'current'
-#    downloadType: 'single'
-#    artifactName: '${{ parameters.artifactName }}'
-#    downloadPath: '$(System.ArtifactsDirectory)'
-
 - task: ArchiveFiles@2
   displayName: 'Package PowerShell Module'
   inputs:
     rootFolderOrFile: '$(Pipeline.Workspace)/${{ parameters.pipelineId }}/${{ parameters.artifactInput }}/${{ parameters.moduleName }}'
     includeRootFolder: true
     archiveType: 'zip'
-    archiveFile: '$(Build.ArtifactStagingDirectory)/${{ parameters.artifactOutput }}/${{ parameters.moduleName }}_${{ parameters.moduleVersion }}.zip'
+    archiveFile: '$(Pipeline.Workspace)/${{ parameters.artifactOutput }}/${{ parameters.moduleName }}_${{ parameters.moduleVersion }}.zip'
     replaceExistingArchive: true
 
 - task: PublishPipelineArtifact@1
   displayName: 'Publish PowerShell Module Package Artifact'
   inputs:
-    targetPath: '$(Build.ArtifactStagingDirectory)/${{ parameters.artifactOutput }}/${{ parameters.moduleName }}_${{ parameters.moduleVersion }}.zip'
+    targetPath: '$(Pipeline.Workspace)/${{ parameters.artifactOutput }}/${{ parameters.moduleName }}_${{ parameters.moduleVersion }}.zip'
     artifact: '${{ parameters.artifactOutput }}'
     publishLocation: 'pipeline'

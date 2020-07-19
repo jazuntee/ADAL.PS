@@ -14,24 +14,20 @@ parameters:
 - name: artifactOutput
   type: string
   default: 'PSModuleSigned'
+- name: SigningCertificateSecretName
+  type: string
+  default: 'Jason-Thompson'
 
 steps:
 #- download: none
 - checkout: self
-
-#- task: DownloadBuildArtifacts@0
-#  inputs:
-#    buildType: 'current'
-#    downloadType: 'single'
-#    artifactName: '${{ parameters.artifactNameSource }}'
-#    downloadPath: '$(Build.ArtifactStagingDirectory)'
 
 - task: CopyFiles@2
   displayName: 'Copy PowerShell Module to Staging'
   inputs:
     SourceFolder: '$(Pipeline.Workspace)/${{ parameters.pipelineId }}/${{ parameters.artifactInput }}'
     Contents: '**'
-    TargetFolder: '$(Build.ArtifactStagingDirectory)/${{ parameters.artifactOutput }}'
+    TargetFolder: '$(Pipeline.Workspace)/${{ parameters.artifactOutput }}'
     CleanTargetFolder: true
     preserveTimestamp: true
 
@@ -40,19 +36,19 @@ steps:
   inputs:
     azureSubscription: 'GTP - Jason Thompson(49945a1a-9e37-4522-bb4b-f71fa2deeec6)'
     KeyVaultName: 'JasothPublic'
-    SecretsFilter: 'Jason-Thompson'
+    SecretsFilter: '${{ parameters.SigningCertificateSecretName }}'
     RunAsPreJob: false
 
 - task: PowerShell@2
   displayName: 'Sign PowerShell Module Files'
   inputs:
     filePath: '$(System.DefaultWorkingDirectory)/build/Sign-PSModule.ps1'
-    arguments: '-ModuleDirectory "$(Build.ArtifactStagingDirectory)/${{ parameters.artifactOutput }}/${{ parameters.moduleName }}" -SigningCertificate "$(Jason-Thompson)"'
+    arguments: '-ModuleDirectory "$(Pipeline.Workspace)/${{ parameters.artifactOutput }}/${{ parameters.moduleName }}" -SigningCertificate "$(${{ parameters.SigningCertificateSecretName }})"'
     pwsh: true
 
 - task: PublishPipelineArtifact@1
   displayName: 'Publish PowerShell Module Artifact'
   inputs:
-    targetPath: '$(Build.ArtifactStagingDirectory)/${{ parameters.artifactOutput }}'
+    targetPath: '$(Pipeline.Workspace)/${{ parameters.artifactOutput }}'
     artifact: '${{ parameters.artifactOutput }}'
     publishLocation: 'pipeline'

@@ -23,13 +23,9 @@ trigger:
 pr: none
 
 variables:
-  #moduleName: 'ADAL.PS'
-  #moduleVersion.MajorMinorBuild: '5.2.7' # Manually adjust the version number as needed for semantic versioning.
-  moduleVersion.Revision: '$[counter(variables.moduleVersion.MajorMinorBuild, 1)]' # Revision is auto-incremented.
-  moduleVersion: '$(moduleVersion.MajorMinorBuild).$(moduleVersion.Revision)'
+  moduleName: 'ADAL.PS'
   vmImage: '${{ parameters.vmImage }}'
   artifactName: 'PSModule'
-  package: 'Microsoft.IdentityModel.Clients.ActiveDirectory'
 
 pool:
   vmImage: $(vmImage)
@@ -38,6 +34,8 @@ stages:
 - stage: Build
   jobs: 
   - job: Prepare
+    variables:
+      skipComponentGovernanceDetection: true
     steps:
     - task: PowerShell@2
       name: ModuleParameters
@@ -46,16 +44,17 @@ stages:
         filePath: '$(System.DefaultWorkingDirectory)/build/Get-PipelineParameters.ps1'
         arguments: '-ModuleManifestPath "$(Build.SourcesDirectory)/src/*.psd1" -PackagesConfigPath "$(Build.SourcesDirectory)/packages.config"'
         pwsh: true
+
   - job: Build
     dependsOn: Prepare
-    #displayName: '${{ variables.moduleVersion.MajorMinorBuild }}'
     variables: 
       moduleName: '$[ dependencies.Prepare.outputs[''ModuleParameters.moduleName''] ]'
-      moduleVersion.Revision: '$[counter(dependencies.Prepare.outputs[''ModuleParameters.moduleVersion''], 1)]'
-      moduleVersion: '$[ format(''{0}.{1}'', dependencies.Prepare.outputs[''ModuleParameters.moduleVersion''], moduleVersion.Revision ]'
+      #moduleVersion.Prefix: '$[ dependencies.Prepare.outputs[''ModuleParameters.moduleVersion''] ]'
+      moduleVersion.Prefix: '$[ dependencies.Prepare.outputs[''ModuleParameters.version.Microsoft.IdentityModel.Clients.ActiveDirectory''] ]'
+      moduleVersion.Revision: '$[ counter(variables[''moduleVersion.Prefix''], 1) ]'
+      moduleVersion: '$[ coalesce(variables[''moduleVersionOverride''], format(''{0}.{1}'', variables[''moduleVersion.Prefix''], variables[''moduleVersion.Revision''])) ]'
       version.Microsoft.IdentityModel.Clients.ActiveDirectory: '$[ dependencies.Prepare.outputs[''ModuleParameters.version.Microsoft.IdentityModel.Clients.ActiveDirectory''] ]'
     steps:
-    
     - template: template-psmodule-build.yml
       parameters:
         moduleName: '$(moduleName)'
@@ -66,7 +65,12 @@ stages:
           targetFramework: [net45]
 
   - job: Sign
-    dependsOn: Build
+    dependsOn:
+    - Prepare
+    - Build
+    variables:
+      moduleName: '$[ dependencies.Prepare.outputs[''ModuleParameters.moduleName''] ]'
+      skipComponentGovernanceDetection: true
     pool:
       vmImage: 'windows-latest'
     steps:
@@ -74,7 +78,7 @@ stages:
       artifact: '$(artifactName)'
     - template: template-psmodule-sign.yml
       parameters:
-        moduleName: '$[ dependencies.Prepare.outputs[''ModuleParameters.moduleName''] ]'
+        moduleName: '$(moduleName)'
 
 - stage: Test
   dependsOn: Build
