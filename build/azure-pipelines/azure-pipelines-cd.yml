@@ -1,11 +1,14 @@
 # Continuous Delivery Pipeline
 # https://aka.ms/yaml
 
-resources:        # types: pipelines | builds | repositories | containers | packages
+resources:
   pipelines:
-  - pipeline: 'CI'  # identifier for the resource used in pipeline resource variables
-    source: 'jasoth.ADAL.PS.CI'  # name of the pipeline that produces an artifact
+  - pipeline: 'CI'
+    source: 'jasoth.ADAL.PS.CI'
     branch: master
+    trigger:
+      branches:
+        - master
 
 parameters:
 - name: vmImage
@@ -30,9 +33,6 @@ pr: none
 
 variables:
   moduleName: 'ADAL.PS'
-  #moduleVersion.MajorMinorBuild: '5.2.7' # Manually adjust the version number as needed for semantic versioning.
-  #moduleVersion.Revision: '$[counter(variables.moduleVersion.MajorMinorBuild, 1)]' # Revision is auto-incremented.
-  #moduleVersion: '$(moduleVersion.MajorMinorBuild).$(moduleVersion.Revision)'
   vmImage: '${{ parameters.vmImage }}'
   artifactModule: 'PSModule'
   artifactModuleSigned: 'PSModuleSigned'
@@ -47,7 +47,6 @@ stages:
   jobs: 
   - job: Prepare
     variables:
-      #moduleVersion.Prefix: '$[ dependencies.Prepare.outputs[''ModuleInfo.version.Microsoft.IdentityModel.Clients.ActiveDirectory''] ]'
       skipComponentGovernanceDetection: true
     steps:
     #- checkout: none
