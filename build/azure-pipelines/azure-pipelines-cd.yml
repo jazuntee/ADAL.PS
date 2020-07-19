@@ -40,13 +40,52 @@ pool:
   vmImage: $(vmImage)
 
 stages:
-- stage: Sign
-  displayName: 'Code Signing'
+- stage: FinalizeBuild
   jobs: 
-  - job: Sign
-    displayName: '$[ variables[''moduleVersion.Revision''] ]'
+  - job: Prepare
     variables:
-      #moduleName: '$[ dependencies.Prepare.outputs[''ModuleParameters.moduleName''] ]'
+      #moduleVersion.Prefix: '$[ dependencies.Prepare.outputs[''ModuleParameters.version.Microsoft.IdentityModel.Clients.ActiveDirectory''] ]'
+      skipComponentGovernanceDetection: true
+    steps:
+    - checkout: none
+    - download: CI
+      artifact: '$(artifactName)'
+    - task: PowerShell@2
+      name: ModuleParameters
+      displayName: 'Get Parameters for PowerShell Module'
+      inputs:
+        filePath: '$(System.DefaultWorkingDirectory)/build/Get-PSModuleInfo.ps1'
+        arguments: '-ModuleManifestPath "$(Pipeline.Workspace)/CI/${{ variables.artifactName }}/{{ variables.moduleName }}/*.psd1" -TrimRevisionNumber'
+        pwsh: true
+
+  - job: Build
+    dependsOn: Prepare
+    variables:
+      moduleName: '$[ dependencies.Prepare.outputs[''ModuleParameters.moduleName''] ]'
+      moduleVersion.Prefix: '$[ dependencies.Prepare.outputs[''ModuleParameters.moduleVersion''] ]'
+      moduleVersion.Revision: '$[ counter(variables[''moduleVersion.Prefix''], 1) ]'
+      moduleVersion: '$[ coalesce(variables[''moduleVersionOverride''], format(''{0}.{1}'', variables[''moduleVersion.Prefix''], variables[''moduleVersion.Revision''])) ]'
+      skipComponentGovernanceDetection: true
+    steps:
+    - task: PowerShell@2
+      displayName: 'Update PowerShell Module Manifest'
+      inputs:
+        filePath: '$(System.DefaultWorkingDirectory)/build/Update-PSModuleManifest.ps1'
+        arguments: '-ModuleManifestPath "$(Pipeline.Workspace)/$(artifactName)/$(moduleName)/$(moduleName).psd1" -ModuleVersion "$(moduleVersion)"'
+        pwsh: true
+    - task: PublishPipelineArtifact@1
+      displayName: 'Publish PowerShell Module Artifact'
+      inputs:
+        targetPath: '$(Pipeline.Workspace)/$(artifactName)'
+        artifact: '$(artifactName)'
+        publishLocation: 'pipeline'
+
+  - job: Sign
+    dependsOn:
+    - Prepare
+    - Build
+    variables:
+      moduleName: '$[ dependencies.Prepare.outputs[''ModuleParameters.moduleName''] ]'
       skipComponentGovernanceDetection: true
     pool:
       vmImage: 'windows-latest'
@@ -60,7 +99,7 @@ stages:
 
 - stage: Package
   displayName: 'Standalone Package'
-  dependsOn: Sign
+  dependsOn: FinalizeBuild
   jobs: 
   - deployment: Package
     displayName: 'Package $(moduleVersion)'
@@ -75,7 +114,7 @@ stages:
               moduleVersion: '$(moduleVersion)'
 
 - stage: Test
-  dependsOn: Sign
+  dependsOn: FinalizeBuild
   jobs: 
   - deployment: Publish
     displayName: 'Publish $(moduleVersion)'
@@ -91,7 +130,7 @@ stages:
               NuGetApiKeySecretName: 'PSTestGallery-API-Key'
 
 - stage: Production
-  dependsOn: Sign
+  dependsOn: FinalizeBuild
   jobs: 
   - deployment: Publish
     displayName: 'Publish $(moduleVersion)'
