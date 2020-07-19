@@ -46,7 +46,7 @@ stages:
 #      artifact: '$(artifactModule)'
 #    - task: PowerShell@2
 #      name: ModuleInfo
-#      displayName: 'Get Parameters for PowerShell Module'
+#      displayName: 'Get PowerShell Module Information'
 #      inputs:
 #        filePath: '$(System.DefaultWorkingDirectory)/build/Get-PSModuleInfo.ps1'
 #        arguments: '-ModuleManifestPath "$(Pipeline.Workspace)/CI/$(artifactModule)/*/*.psd1" -TrimRevisionNumber'
@@ -113,7 +113,7 @@ stages:
       artifact: '$(artifactModuleSigned)'
     - task: PowerShell@2
       name: ModuleInfo
-      displayName: 'Get Parameters for PowerShell Module'
+      displayName: 'Get PowerShell Module Information'
       inputs:
         filePath: '$(System.DefaultWorkingDirectory)/build/Get-PSModuleInfo.ps1'
         arguments: '-ModuleManifestPath "$(Pipeline.Workspace)/$(artifactModuleSigned)/*/*.psd1"'
@@ -148,7 +148,7 @@ stages:
       artifact: '$(artifactModuleSigned)'
     - task: PowerShell@2
       name: ModuleInfo
-      displayName: 'Get Parameters for PowerShell Module'
+      displayName: 'Get PowerShell Module Information'
       inputs:
         filePath: '$(System.DefaultWorkingDirectory)/build/Get-PSModuleInfo.ps1'
         arguments: '-ModuleManifestPath "$(Pipeline.Workspace)/$(artifactModuleSigned)/*/*.psd1"'
@@ -156,6 +156,7 @@ stages:
 
   - deployment: Publish
     environment: Test
+    dependsOn: Prepare
     variables:
       moduleName: '$[ dependencies.Prepare.outputs[''ModuleInfo.moduleName''] ]'
       moduleVersion: '$[ dependencies.Prepare.outputs[''ModuleInfo.moduleVersion''] ]'
@@ -197,7 +198,7 @@ stages:
       artifact: '$(artifactModuleSigned)'
     - task: PowerShell@2
       name: ModuleInfo
-      displayName: 'Get Parameters for PowerShell Module'
+      displayName: 'Get PowerShell Module Information'
       inputs:
         filePath: '$(System.DefaultWorkingDirectory)/build/Get-PSModuleInfo.ps1'
         arguments: '-ModuleManifestPath "$(Pipeline.Workspace)/$(artifactModuleSigned)/*/*.psd1"'
