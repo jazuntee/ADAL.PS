@@ -2,6 +2,8 @@
 
 [![PSGallery Version](https://img.shields.io/powershellgallery/v/ADAL.PS.svg?style=flat&logo=powershell&label=PSGallery%20Version)](https://www.powershellgallery.com/packages/ADAL.PS) [![PSGallery Downloads](https://img.shields.io/powershellgallery/dt/ADAL.PS.svg?style=flat&logo=powershell&label=PSGallery%20Downloads)](https://www.powershellgallery.com/packages/ADAL.PS) [![PSGallery Platform](https://img.shields.io/powershellgallery/p/ADAL.PS.svg?style=flat&logo=powershell&label=PSGallery%20Platform)](https://www.powershellgallery.com/packages/ADAL.PS)
 
+[![Build Status](https://dev.azure.com/jasoth/PowerShell/_apis/build/status/ADAL.PS/jasoth.ADAL.PS.CI?branchName=master)](https://dev.azure.com/jasoth/PowerShell/_build/latest?definitionId=18&branchName=master)
+
 The ADAL.PS PowerShell module wraps ADAL.NET functionality into PowerShell-friendly cmdlets and is not supported by Microsoft. Microsoft support does not extend beyond the underlying ADAL.NET library. For any inquiries regarding the PowerShell module itself, you may contact the author on GitHub or PowerShell Gallery.
 
 Active Directory Authentication Library for .NET (ADAL.NET) is an easy to use authentication library. You can use ADAL.NET to acquire security tokens to access protected Web APIs, for instance Microsoft Graph, or another Web APIs.
