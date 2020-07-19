@@ -21,14 +21,6 @@ parameters:
   - macOS-latest
 
 trigger: none
-#  batch: true
-#  branches:
-#    include:
-#    - master
-#  paths:
-#    include:
-#    - src/*
-
 pr: none
 
 variables:
