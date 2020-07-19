@@ -158,6 +158,7 @@ stages:
               moduleName: '$(moduleName)'
               RepositorySourceLocation: 'https://www.poshtestgallery.com/api/v2'
               NuGetApiKeySecretName: 'PSTestGallery-API-Key'
+              Unlist: true
 
 - stage: Production
   displayName: 'Deploy to Production'
