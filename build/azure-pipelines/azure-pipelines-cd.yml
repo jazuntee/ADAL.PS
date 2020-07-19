@@ -94,12 +94,12 @@ stages:
     pool:
       vmImage: 'windows-latest'
     steps:
-    - download: current
+    - download: 'CI'
       artifact: '$(artifactModule)'
     - template: template-psmodule-sign.yml
       parameters:
         moduleName: '$(moduleName)'
-        #pipelineId: 'CI'
+        pipelineId: 'CI'
 
 - stage: Package
   displayName: 'Standalone Package'
