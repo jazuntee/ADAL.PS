@@ -135,6 +135,7 @@ stages:
               moduleVersion: '$(moduleVersion)'
 
   - deployment: Release
+    displayName: 'Create Release'
     dependsOn:
     - Prepare
     - Package
