@@ -38,7 +38,7 @@ stages:
       skipComponentGovernanceDetection: true
     steps:
     - task: PowerShell@2
-      name: ModuleParameters
+      name: ModuleInfo
       displayName: 'Get Parameters for PowerShell Module'
       inputs:
         filePath: '$(System.DefaultWorkingDirectory)/build/Get-PSModuleInfo.ps1'
@@ -48,12 +48,12 @@ stages:
   - job: Build
     dependsOn: Prepare
     variables: 
-      moduleName: '$[ dependencies.Prepare.outputs[''ModuleParameters.moduleName''] ]'
-      #moduleVersion.Prefix: '$[ dependencies.Prepare.outputs[''ModuleParameters.moduleVersion''] ]'
-      moduleVersion.Prefix: '$[ dependencies.Prepare.outputs[''ModuleParameters.version.Microsoft.IdentityModel.Clients.ActiveDirectory''] ]'
+      moduleName: '$[ dependencies.Prepare.outputs[''ModuleInfo.moduleName''] ]'
+      #moduleVersion.Prefix: '$[ dependencies.Prepare.outputs[''ModuleInfo.moduleVersion''] ]'
+      moduleVersion.Prefix: '$[ dependencies.Prepare.outputs[''ModuleInfo.version.Microsoft.IdentityModel.Clients.ActiveDirectory''] ]'
       moduleVersion.Revision: '$[ counter(variables[''moduleVersion.Prefix''], 1) ]'
       moduleVersion: '$[ coalesce(variables[''moduleVersionOverride''], format(''{0}.{1}'', variables[''moduleVersion.Prefix''], variables[''moduleVersion.Revision''])) ]'
-      version.Microsoft.IdentityModel.Clients.ActiveDirectory: '$[ dependencies.Prepare.outputs[''ModuleParameters.version.Microsoft.IdentityModel.Clients.ActiveDirectory''] ]'
+      version.Microsoft.IdentityModel.Clients.ActiveDirectory: '$[ dependencies.Prepare.outputs[''ModuleInfo.version.Microsoft.IdentityModel.Clients.ActiveDirectory''] ]'
     steps:
     - template: template-psmodule-build.yml
       parameters:
@@ -69,7 +69,7 @@ stages:
     - Prepare
     - Build
     variables:
-      moduleName: '$[ dependencies.Prepare.outputs[''ModuleParameters.moduleName''] ]'
+      moduleName: '$[ dependencies.Prepare.outputs[''ModuleInfo.moduleName''] ]'
       skipComponentGovernanceDetection: true
     pool:
       vmImage: 'windows-latest'
