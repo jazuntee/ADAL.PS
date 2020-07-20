@@ -81,6 +81,7 @@ stages:
     - template: template-psmodule-sign.yml
       parameters:
         moduleName: '$(moduleName)'
+        SigningCertificateSecretName: 'Jason-Thompson-Test'
 
 - stage: Test
   dependsOn: Build
