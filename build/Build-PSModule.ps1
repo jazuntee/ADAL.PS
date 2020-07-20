@@ -65,16 +65,5 @@ foreach ($package in $xmlPackagesConfig.packages.package) {
     Copy-Item ("{0}\*" -f $PackageDirectory) -Destination $PackageOutputDirectory.FullName -Recurse -Force
 }
 
-## Get Module Output FileList
-$ModuleFileListFileInfo = Get-ChildItem $ModuleOutputDirectoryInfo.FullName -Recurse -File
-$ModuleRequiredAssembliesFileInfo = $ModuleFileListFileInfo | Where-Object Extension -eq '.dll'
-$ModuleManifestOutputFileInfo = $ModuleFileListFileInfo | Where-Object Name -eq $ModuleManifestFileInfo.Name
-
-$ModuleFileList = Get-RelativePath $ModuleFileListFileInfo.FullName -WorkingDirectory $ModuleOutputDirectoryInfo.FullName -ErrorAction Stop
-$ModuleRequiredAssemblies = Get-RelativePath $ModuleRequiredAssembliesFileInfo.FullName -WorkingDirectory $ModuleOutputDirectoryInfo.FullName -ErrorAction Stop
-
-## Clear RequiredAssemblies
-(Get-Content $ModuleManifestOutputFileInfo.FullName -Raw) -replace "(?s)RequiredAssemblies\ =\ @\([^)]*\)", "# RequiredAssemblies = @()" | Set-Content $ModuleManifestOutputFileInfo.FullName
-
 ## Update Module Manifest in Module Output Directory
-Update-ModuleManifest -Path $ModuleManifestOutputFileInfo.FullName -RequiredAssemblies $ModuleRequiredAssemblies -FileList $ModuleFileList
+&$PSScriptRoot\Update-PSModuleManifest.ps1 -ModuleManifestPath (Join-Path $ModuleOutputDirectoryInfo.FullName $ModuleManifestFileInfo.Name)

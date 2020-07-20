@@ -1,8 +1,8 @@
 param
 (
-    # Path to Module Root Directory
+    # Path to Module Manifest
     [Parameter(Mandatory = $false)]
-    [string] $ModuleDirectory = "..\build\release\*\*",
+    [string] $ModuleManifestPath = ".\release\*\*.*.*",
     # Specifies the certificate that will be used to sign the script or file.
     [Parameter(Mandatory = $false)]
     [object] $SigningCertificate = (Get-ChildItem Cert:\CurrentUser\My\E7413D745138A6DC584530AECE27CEFDDA9D9CD6 -CodeSigningCert),
@@ -14,10 +14,22 @@ param
 ## Initialize
 Import-Module "$PSScriptRoot\CommonFunctions.psm1" -Force -WarningAction SilentlyContinue -ErrorAction Stop
 
+[System.IO.FileInfo] $ModuleManifestFileInfo = Get-PathInfo $ModuleManifestPath -DefaultFilename "*.psd1" -ErrorAction Stop | Select-Object -Last 1
+
 ## Parse Signing Certificate
 if ($SigningCertificate -is [System.Security.Cryptography.X509Certificates.X509Certificate2]) { }
 elseif ($SigningCertificate -is [System.Security.Cryptography.X509Certificates.X509Certificate2Collection]) { $SigningCertificate = $SigningCertificate[-1] }
 else { $SigningCertificate = Get-X509Certificate $SigningCertificate -EndEntityCertificateOnly }
 
+## Read Module Manifest
+$ModuleManifest = Import-PowerShellDataFile $ModuleManifestFileInfo.FullName
+
+$FileList = $ModuleManifest.FileList -like "*.ps*1"
+for ($i = 0; $i -lt $FileList.Count; $i++) {
+    $FileList[$i] = Join-Path $ModuleManifestFileInfo.DirectoryName $FileList[$i] -Resolve
+}
+
+#$FileList = Get-ChildItem $ModuleManifestFileInfo.DirectoryName -Filter "*.ps*1" -Recurse
+
 ## Sign PowerShell Files
-Set-AuthenticodeSignature "$ModuleDirectory\*.ps*1" -Certificate $SigningCertificate -HashAlgorithm SHA256 -IncludeChain NotRoot -TimestampServer $TimestampServer
+Set-AuthenticodeSignature $FileList -Certificate $SigningCertificate -HashAlgorithm SHA256 -IncludeChain NotRoot -TimestampServer $TimestampServer

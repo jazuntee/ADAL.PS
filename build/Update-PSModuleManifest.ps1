@@ -1,10 +1,10 @@
 param
 (
     # Path to Module Manifest
-    [parameter(Mandatory = $false)]
-    [string] $ModuleManifestPath,
+    [Parameter(Mandatory = $false)]
+    [string] $ModuleManifestPath = ".\release\*\*.*.*",
     # Module Version
-    [parameter(Mandatory = $false)]
+    [Parameter(Mandatory = $false)]
     [string] $ModuleVersion
 )
 

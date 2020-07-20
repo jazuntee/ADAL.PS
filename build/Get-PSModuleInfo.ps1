@@ -1,12 +1,12 @@
 param
 (
-    #
+    # Path to Module Manifest
     [parameter(Mandatory = $false)]
     [string] $ModuleManifestPath = "..\src",
-    #
+    # Path to packages.config file
     [parameter(Mandatory = $false)]
     [string] $PackagesConfigPath = "..\",
-    #
+    # Return version number without a revision number
     [parameter(Mandatory = $false)]
     [switch] $TrimRevisionNumber
 )
@@ -21,14 +21,15 @@ Import-Module "$PSScriptRoot\CommonFunctions.psm1" -Force -WarningAction Silentl
 $ModuleManifest = Import-PowerShellDataFile $ModuleManifestFileInfo.FullName -ErrorAction Stop
 
 ## Output moduleName Azure Pipelines
-Write-Host ('##vso[task.setvariable variable=moduleName;isOutput=true]{0}' -f $ModuleManifestFileInfo.BaseName)
-Write-Host ('##[debug] {0} = {1}' -f 'moduleName', $ModuleManifestFileInfo.BaseName)
+$env:moduleName = $ModuleManifestFileInfo.BaseName
+Write-Host ('##vso[task.setvariable variable=moduleName;isOutput=true]{0}' -f $env:moduleName)
+Write-Host ('##[debug] {0} = {1}' -f 'moduleName', $env:moduleName)
 
 ## Output moduleVersion Azure Pipelines
-[version] $ModuleVersion = $ModuleManifest.ModuleVersion
-if ($TrimRevisionNumber) { $ModuleVersion = $ModuleManifest.ModuleVersion -replace '(?<=^(.?[0-9]+){3,}).[0-9]+$', '' }
-Write-Host ('##vso[task.setvariable variable=moduleVersion;isOutput=true]{0}' -f $ModuleVersion)
-Write-Host ('##[debug] {0} = {1}' -f 'moduleVersion', $ModuleVersion)
+$env:moduleVersion = $ModuleManifest.ModuleVersion
+if ($TrimRevisionNumber) { $env:moduleVersion = $env:moduleVersion -replace '(?<=^(.?[0-9]+){3,}).[0-9]+$', '' }
+Write-Host ('##vso[task.setvariable variable=moduleVersion;isOutput=true]{0}' -f $env:moduleVersion)
+Write-Host ('##[debug] {0} = {1}' -f 'moduleVersion', $env:moduleVersion)
 
 ## Read Packages Configuration
 if ($PackagesConfigFileInfo.Exists) {
@@ -37,6 +38,7 @@ if ($PackagesConfigFileInfo.Exists) {
 
     foreach ($package in $xmlPackagesConfig.packages.package) {
         ## Output packageVersion Azure Pipelines
+        Set-Variable ('env:{0}' -f $package.id) -Value $package.version
         Write-Host ('##vso[task.setvariable variable=version.{0};isOutput=true]{1}' -f $package.id, $package.version)
         Write-Host ('##[debug] version.{0} = {1}' -f $package.id, $package.version)
     }

@@ -1,27 +1,23 @@
 param
 (
-    # Path to Module
+    # Path to Module Manifest
     [Parameter(Mandatory = $false)]
-    [string] $ModulePath = ".\release\ADAL.PS",
+    [string] $ModuleManifestPath = ".\release\*\*.*.*",
     # Repository for PowerShell Gallery
     [Parameter(Mandatory = $false)]
     [string] $RepositorySourceLocation = 'https://www.powershellgallery.com/api/v2',
     # API Key for PowerShell Gallery
     [Parameter(Mandatory = $true)]
-    [string] $NuGetApiKey,
+    [securestring] $NuGetApiKey,
     # Unlist from PowerShell Gallery
     [Parameter(Mandatory = $false)]
     [switch] $Unlist
 )
 
 ## Initialize
-$ModuleManifestPath = Get-Item $ModulePath
-if ($ModuleManifestPath -is [System.IO.DirectoryInfo]) {
-    $ModuleManifestPath = Get-ChildItem $ModulePath -Filter "*.psd1"
-    if (!$ModuleManifestPath) {
-        $ModuleManifestPath = Get-ChildItem (Join-Path $ModulePath (Join-Path "*.*.*" "*.psd1")) | Select-Object -Last 1
-    }
-}
+Import-Module "$PSScriptRoot\CommonFunctions.psm1" -Force -WarningAction SilentlyContinue -ErrorAction Stop
+
+[System.IO.FileInfo] $ModuleManifestFileInfo = Get-PathInfo $ModuleManifestPath -DefaultFilename "*.psd1" -ErrorAction Stop | Select-Object -Last 1
 
 ## Publish
 $PSRepositoryAll = Get-PSRepository
@@ -31,17 +27,18 @@ if (!$PSRepository) {
         [string] $RepositoryName = New-Guid
         Register-PSRepository $RepositoryName -SourceLocation $RepositorySourceLocation
         $PSRepository = Get-PSRepository $RepositoryName
-        Publish-Module -Path $ModuleManifestPath.DirectoryName -NuGetApiKey $NuGetApiKey -Repository $RepositoryName
+        Publish-Module -Path $ModuleManifestFileInfo.DirectoryName -NuGetApiKey (ConvertFrom-SecureString $NuGetApiKey -AsPlainText) -Repository $PSRepository.Name
     }
     finally {
         Unregister-PSRepository $RepositoryName
     }
 }
 else {
-    Publish-Module -Path $ModuleManifestPath.DirectoryName -NuGetApiKey $NuGetApiKey -Repository $PSRepository.Name
+    Publish-Module -Path $ModuleManifestFileInfo.DirectoryName -NuGetApiKey $NuGetApiKey -Repository $PSRepository.Name
 }
 
+## Unlist the Package
 if ($Unlist) {
-    $ModuleManifest = Import-PowerShellDataFile $ModuleManifestPath.FullName
-    Invoke-RestMethod -Method Delete -Uri ("{0}/{1}/{2}" -f $PSRepository.PublishLocation, $ModuleManifestPath.BaseName, $ModuleManifest.ModuleVersion) -Headers @{ 'X-NuGet-ApiKey' = $NuGetApiKey }
+    $ModuleManifest = Import-PowerShellDataFile $ModuleManifestFileInfo.FullName
+    Invoke-RestMethod -Method Delete -Uri ("{0}/{1}/{2}" -f $PSRepository.PublishLocation, $ModuleManifestFileInfo.BaseName, $ModuleManifest.ModuleVersion) -Headers @{ 'X-NuGet-ApiKey' = ConvertFrom-SecureString $NuGetApiKey -AsPlainText }
 }
