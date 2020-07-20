@@ -140,26 +140,26 @@ stages:
   - Build
   #- Package
   jobs: 
-  - job: Prepare
-    variables:
-      skipComponentGovernanceDetection: true
-    steps:
-    - download: current
-      artifact: '$(artifactModuleSigned)'
-    - task: PowerShell@2
-      name: ModuleInfo
-      displayName: 'Get PowerShell Module Information'
-      inputs:
-        filePath: '$(System.DefaultWorkingDirectory)/build/Get-PSModuleInfo.ps1'
-        arguments: '-ModuleManifestPath "$(Pipeline.Workspace)/$(artifactModuleSigned)/*/*.psd1"'
-        pwsh: true
+  #- job: Prepare
+  #  variables:
+  #    skipComponentGovernanceDetection: true
+  #  steps:
+  #  - download: current
+  #    artifact: '$(artifactModuleSigned)'
+  #  - task: PowerShell@2
+  #    name: ModuleInfo
+  #    displayName: 'Get PowerShell Module Information'
+  #    inputs:
+  #      filePath: '$(System.DefaultWorkingDirectory)/build/Get-PSModuleInfo.ps1'
+  #      arguments: '-ModuleManifestPath "$(Pipeline.Workspace)/$(artifactModuleSigned)/*/*.psd1"'
+  #      pwsh: true
 
   - deployment: Publish
     environment: Test
-    dependsOn: Prepare
-    variables:
-      moduleName: '$[ dependencies.Prepare.outputs[''ModuleInfo.moduleName''] ]'
-      moduleVersion: '$[ dependencies.Prepare.outputs[''ModuleInfo.moduleVersion''] ]'
+    #dependsOn: Prepare
+    #variables:
+    #  moduleName: '$[ dependencies.Prepare.outputs[''ModuleInfo.moduleName''] ]'
+    #  moduleVersion: '$[ dependencies.Prepare.outputs[''ModuleInfo.moduleVersion''] ]'
     strategy:
       runOnce:
         deploy:
