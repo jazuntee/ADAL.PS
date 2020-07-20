@@ -112,7 +112,7 @@
         }
         "*OnBehalfOf" {
             [Microsoft.IdentityModel.Clients.ActiveDirectory.UserAssertion] $UserAssertionObj = New-Object Microsoft.IdentityModel.Clients.ActiveDirectory.UserAssertion -ArgumentList $UserAssertion, $UserAssertionType
-            $AuthenticationResult = $AuthenticationContext.AcquireTokenAsync($Scopes, $ClientCredential, $UserAssertionObj).GetAwaiter().GetResult();
+            $AuthenticationResult = $AuthenticationContext.AcquireTokenAsync($Resource, $ClientCredential, $UserAssertionObj).GetAwaiter().GetResult();
             break
         }
     }
