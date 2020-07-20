@@ -47,7 +47,7 @@ $ScriptBlockTest = {
     param ([string]$ModulePath,[string]$TestsDirectory)
     ## Force WindowsPowerShell to load correct version of built-in modules when launched from PowerShell 6+
     if ($PSVersionTable.PSEdition -eq 'Desktop') { Import-Module 'Microsoft.PowerShell.Management','Microsoft.PowerShell.Utility','CimCmdlets' -MaximumVersion 5.9.9.9 }
-    Import-Module Pester
+    Import-Module Pester -MaximumVersion 4.99
     $PSModule = Import-Module $ModulePath -PassThru
 
     $CodeCoverage = Invoke-Pester @{ Path = (Join-Path $TestsDirectory "*"); Parameters = @{ ModulePath = $ModulePath } } -CodeCoverage (Join-Path $PSModule.ModuleBase "*") -PassThru

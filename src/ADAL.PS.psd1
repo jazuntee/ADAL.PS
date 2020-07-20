@@ -10,7 +10,7 @@
 RootModule = 'ADAL.PS.psm1'
 
 # Version number of this module.
-ModuleVersion = '5.2.7'
+ModuleVersion = '5.2.7.2'
 
 # ID used to uniquely identify this module
 GUID = '2d417b96-5b7c-4e1b-b183-1ec4bce19746'
