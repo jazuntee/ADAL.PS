@@ -252,53 +252,6 @@ function Assert-DirectoryExists {
     }
 }
 
-function New-LogFilename ([string] $Path) { return ('{0}.{1}.log' -f $Path, (Get-Date -Format "yyyyMMddThhmmss")) }
-function Get-ExtractionFolder ([System.IO.FileInfo] $Path) { return Join-Path $Path.DirectoryName $Path.BaseName }
-
-function Use-StartBitsTransfer {
-    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium')]
-    param (
-        # Specifies the source location and the names of the files that you want to transfer.
-        [Parameter(Mandatory = $true, Position = 0)]
-        [string] $Source,
-        # Specifies the destination location and the names of the files that you want to transfer.
-        [Parameter(Mandatory = $false, Position = 1)]
-        [string] $Destination,
-        # Specifies the proxy usage settings
-        [Parameter(Mandatory = $false, Position = 3)]
-        [ValidateSet('SystemDefault', 'NoProxy', 'AutoDetect', 'Override')]
-        [string] $ProxyUsage,
-        # Specifies a list of proxies to use
-        [Parameter(Mandatory = $false, Position = 4)]
-        [uri[]] $ProxyList,
-        # Specifies the authentication mechanism to use at the Web proxy
-        [Parameter(Mandatory = $false, Position = 5)]
-        [ValidateSet('Basic', 'Digest', 'NTLM', 'Negotiate', 'Passport')]
-        [string] $ProxyAuthentication,
-        # Specifies the credentials to use to authenticate the user at the proxy
-        [Parameter(Mandatory = $false, Position = 6)]
-        [pscredential] $ProxyCredential,
-        # Returns an object representing transfered item.
-        [Parameter(Mandatory = $false)]
-        [switch] $PassThru
-    )
-    [hashtable] $paramStartBitsTransfer = $PSBoundParameters
-    foreach ($Parameter in $PSBoundParameters.Keys) {
-        if ($Parameter -notin 'ProxyUsage', 'ProxyList', 'ProxyAuthentication', 'ProxyCredential') {
-            $paramStartBitsTransfer.Remove($Parameter)
-        }
-    }
-
-    if (!$Destination) { $Destination = (Get-Location).ProviderPath }
-    if (![System.IO.Path]::HasExtension($Destination)) { $Destination = Join-Path $Destination (Split-Path $Source -Leaf) }
-    if (Test-Path $Destination) { Write-Verbose ('The Source [{0}] was not transfered to Destination [{0}] because it already exists.' -f $Source, $Destination) }
-    else {
-        Write-Verbose ('Downloading Source [{0}] to Destination [{1}]' -f $Source, $Destination);
-        Start-BitsTransfer $Source $Destination @paramStartBitsTransfer
-    }
-    if ($PassThru) { return Get-Item $Destination }
-}
-
 function Use-StartProcess {
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium')]
     param (
@@ -334,75 +287,18 @@ function Use-StartProcess {
     }
 }
 
-function Invoke-WindowsInstaller {
-    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium')]
-    param (
-        # Path to msi or msp
-        [Parameter(Mandatory = $true, Position = 0)]
-        [System.IO.FileInfo] $Path,
-        # Sets user interface level
-        [Parameter(Mandatory = $false)]
-        [ValidateSet('None', 'Basic', 'Reduced', 'Full')]
-        [string] $UserInterfaceMode,
-        # Restart Options
-        [Parameter(Mandatory = $false)]
-        [ValidateSet('No', 'Prompt', 'Force')]
-        [string] $RestartOptions,
-        # Logging Options
-        [Parameter(Mandatory = $false)]
-        [ValidatePattern('^[iwearucmopvx\+!\*]{0,14}$')]
-        [string] $LoggingOptions,
-        # Path of log file
-        [Parameter(Mandatory = $false)]
-        [System.IO.FileInfo] $LogPath,
-        # Public Properties
-        [Parameter(Mandatory = $false)]
-        [hashtable] $PublicProperties,
-        # Specifies the working directory for the process.
-        [Parameter(Mandatory = $false)]
-        [string] $WorkingDirectory,
-        # Regex pattern in cmdline to replace with '**********'
-        [Parameter(Mandatory = $false)]
-        [string[]] $SensitiveDataFilters
-    )
 
-    [System.IO.FileInfo] $itemLogPath = (Get-Location).ProviderPath
-    if ($LogPath) { $itemLogPath = $LogPath }
-    if (!$itemLogPath.Extension) { $itemLogPath = Join-Path $itemLogPath.FullName ('{0}.{1}.log' -f (Split-Path $Path -Leaf), (Get-Date -Format "yyyyMMddThhmmss")) }
+<#
+.SYNOPSIS
+    Convert PowerShell data types to PowerShell string syntax.
+.DESCRIPTION
 
-    ## Windows Installer Arguments
-    [System.Collections.Generic.List[string]] $argMsiexec = New-Object "System.Collections.Generic.List[string]"
-    switch ($UserInterfaceMode) {
-        'None' { $argMsiexec.Add('/qn'); break }
-        'Basic' { $argMsiexec.Add('/qb'); break }
-        'Reduced' { $argMsiexec.Add('/qr'); break }
-        'Full' { $argMsiexec.Add('/qf'); break }
-    }
-
-    switch ($Restart) {
-        'No' { $argMsiexec.Add('/norestart'); break }
-        'Prompt' { $argMsiexec.Add('/promptrestart'); break }
-        'Force' { $argMsiexec.Add('/forcerestart'); break }
-    }
-
-    if ($LoggingOptions -or $LogPath) { $argMsiexec.Add(('/l{0} "{1}"' -f $LoggingOptions, $itemLogPath.FullName)) }
-    switch ($Path.Extension) {
-        '.msi' { $argMsiexec.Add('/i "{0}"' -f $Path); break }
-        '.msp' { $argMsiexec.Add('/update "{0}"' -f $Path); break }
-        Default { $argMsiexec.Add('/i "{0}"' -f $Path); break }
-    }
-
-    foreach ($PropertyKey in $PublicProperties.Keys) {
-        $argMsiexec.Add(('{0}="{1}"' -f $PropertyKey.ToUpper(), $PublicProperties[$PropertyKey]))
-    }
-
-    [hashtable] $paramStartProcess = @{ }
-    if ($argMsiexec) { $paramStartProcess["ArgumentList"] = $argMsiexec }
-    if ($WorkingDirectory) { $paramStartProcess["WorkingDirectory"] = $WorkingDirectory }
-
-    Use-StartProcess msiexec @paramStartProcess
-}
-
+.EXAMPLE
+    PS C:\>ConvertTo-PsString @{ key1='value1'; key2='value2' }
+    Convert hashtable to PowerShell string.
+.INPUTS
+    System.String
+#>
 function ConvertTo-PsString {
     [CmdletBinding()]
     [OutputType([string])]
@@ -447,7 +343,8 @@ function ConvertTo-PsString {
             )
 
             [string] $OutputString = ''
-            if ($ObjectType.IsGenericType) {
+            if ($ObjectType.IsGenericType -or ($ObjectType.BaseType -and $ObjectType.BaseType.IsGenericType)) {
+                if (!$ObjectType.IsGenericType) { $ObjectType = $ObjectType.BaseType }
                 if ($ObjectType.FullName.StartsWith('System.Collections.Generic.Dictionary')) {
                     #$OutputString += '[hashtable]'
                     if ($Compact) {
@@ -528,12 +425,16 @@ function ConvertTo-PsString {
                         [void]$OutputString.AppendFormat("'{0}'", $InputObject.ToString('O'))
                         break
                     }
-                    { $_.BaseType.Equals([Enum]) } {
+                    { $_.BaseType -and $_.BaseType.Equals([Enum]) } {
                         [void]$OutputString.AppendFormat('::{0}', $InputObject)
                         break
                     }
-                    { $_.BaseType.Equals([ValueType]) } {
+                    { $_.BaseType -and $_.BaseType.Equals([ValueType]) } {
                         [void]$OutputString.AppendFormat('{0}', $InputObject)
+                        break
+                    }
+                    { $_.BaseType.Equals([System.IO.FileSystemInfo]) -or $_.Equals([System.Uri]) } {
+                        [void]$OutputString.AppendFormat("'{0}'", $InputObject.ToString().Replace("'", "''")) #.Replace('"','`"')
                         break
                     }
                     { $_.Equals([System.Xml.XmlDocument]) } {
@@ -551,7 +452,7 @@ function ConvertTo-PsString {
                         [void]$OutputString.Append('}')
                         break
                     }
-                    { $_.FullName.StartsWith('System.Collections.Generic.Dictionary') } {
+                    { $_.FullName.StartsWith('System.Collections.Generic.Dictionary') -or ($_.BaseType -and $_.BaseType.FullName.StartsWith('System.Collections.Generic.Dictionary')) } {
                         $iInput = 0
                         foreach ($enumHashtable in $InputObject.GetEnumerator()) {
                             [void]$OutputString.AppendFormat('; $D.Add({0},{1})', (ConvertTo-PsString $enumHashtable.Key -Compact:$Compact -NoEnumerate), (ConvertTo-PsString $enumHashtable.Value -Compact:$Compact -NoEnumerate))
@@ -560,7 +461,7 @@ function ConvertTo-PsString {
                         [void]$OutputString.Append('; $D })')
                         break
                     }
-                    { $_.BaseType.Equals([Array]) } {
+                    { $_.BaseType -and $_.BaseType.Equals([Array]) } {
                         [void]$OutputString.Append('(Write-Output @(')
                         $iInput = 0
                         for ($iInput = 0; $iInput -lt $InputObject.Count; $iInput++) {
@@ -718,6 +619,15 @@ function Get-X509Certificate {
                 }
                 elseif ($InputObject -is [byte[]]) {
                     $inputBytes = $InputObject
+                }
+                elseif ($InputObject -is [SecureString]) {
+                    Write-Verbose 'Decrypting SecureString and decoding Base64 string to byte array.'
+                    if ($PSVersionTable.PSVersion -ge [version]'7.0') {
+                        $inputBytes = [System.Convert]::FromBase64String((ConvertFrom-SecureString $InputObject -AsPlainText))
+                    }
+                    else {
+                        $inputBytes = [System.Convert]::FromBase64String((ConvertFrom-SecureStringAsPlainText $InputObject -Force))
+                    }
                 }
                 elseif ($InputObject -is [string]) {
                     Write-Verbose 'Decoding Base64 string to byte array.'
