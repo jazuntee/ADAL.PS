@@ -135,7 +135,7 @@ stages:
               moduleVersion: '$(moduleVersion)'
 
 - stage: DeployTest
-  displayName: 'Deploy to Test'
+  displayName: 'Deploy Test'
   dependsOn:
   - Build
   #- Package
@@ -185,7 +185,7 @@ stages:
           #    addChangeLog: false
 
 - stage: Production
-  displayName: 'Deploy to Production'
+  displayName: 'Deploy Production'
   dependsOn:
   - Build
   - Package
