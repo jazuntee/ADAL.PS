@@ -138,7 +138,7 @@ stages:
   displayName: 'Deploy to Test'
   dependsOn:
   - Build
-  - Package
+  #- Package
   jobs: 
   - job: Prepare
     variables:
@@ -170,19 +170,19 @@ stages:
               RepositorySourceLocation: 'https://www.poshtestgallery.com/api/v2'
               NuGetApiKeySecretName: 'PSTestGallery-API-Key'
               Unlist: true
-          - task: GitHubRelease@1
-            displayName: 'Create Release on GitHub'
-            inputs:
-              gitHubConnection: 'GitHub jasoth'
-              repositoryName: '$(Build.Repository.Name)'
-              action: 'create'
-              target: '$(Build.SourceVersion)'
-              tagSource: 'userSpecifiedTag'
-              tag: 'v$(moduleVersion)'
-              title: '$(moduleName) v$(moduleVersion)'
-              assets: '$(Pipeline.Workspace)/$(artifactModulePackage)/*'
-              isDraft: true
-              addChangeLog: false
+          #- task: GitHubRelease@1
+          #  displayName: 'Create Release on GitHub'
+          #  inputs:
+          #    gitHubConnection: 'GitHub jasoth'
+          #    repositoryName: '$(Build.Repository.Name)'
+          #    action: 'create'
+          #    target: '$(Build.SourceVersion)'
+          #    tagSource: 'userSpecifiedTag'
+          #    tag: 'v$(moduleVersion)'
+          #    title: '$(moduleName) v$(moduleVersion)'
+          #    assets: '$(Pipeline.Workspace)/$(artifactModulePackage)/*'
+          #    isDraft: true
+          #    addChangeLog: false
 
 - stage: Production
   displayName: 'Deploy to Production'
