@@ -1,3 +1,4 @@
+#Requires -Version 7.0
 param
 (
     # Path to Module Manifest
