@@ -34,7 +34,7 @@ if (!$PSRepository) {
     }
 }
 else {
-    Publish-Module -Path $ModuleManifestFileInfo.DirectoryName -NuGetApiKey $NuGetApiKey -Repository $PSRepository.Name
+    Publish-Module -Path $ModuleManifestFileInfo.DirectoryName -NuGetApiKey (ConvertFrom-SecureString $NuGetApiKey -AsPlainText) -Repository $PSRepository.Name
 }
 
 ## Unlist the Package
